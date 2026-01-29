@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GYMBUDDY</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+      font-family: Arial;
+    }
+
+    .background {
+      position: absolute;
+      z-index: -1;
+    }
+
+    h1 {
+      text-align: center;
+      color: #e3d1d1;
+      margin: 0;
+      line-height: 79px;
+    }
+
+    nav {
+      background-color: rgb(215, 26, 26);
+    }
+
+    nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+
+      /*basındaki noktaları kaldırıyor*/
+      list-style-type: none;
+
+      margin: 0;
+      padding: 0;
+    }
+
+    nav li {
+      position: relative;
+      padding: 10px 20px;
+      background-color: rgb(215, 26, 26);
+      transition: background-color 0.5s;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: rgb(230, 216, 216);
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.5s;
+    }
+
+
+    nav li:hover {
+      background-color: black;
+
+    }
+
+    nav li:hover>a {
+      color: red;
+    }
+
+    /* ALT MENÜ (DROPDOWN) */
+    .submenu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0px;
+      background-color: rgb(215, 26, 26);
+      min-width: 130px;
+      z-index: 1;
+    }
+
+
+
+    nav li:hover .submenu {
+      display: flex;
+    }
+
+    .submenu li:hover a {
+      color: black;
+    }
+
+    .submenu li:hover {
+      background-color: rgb(215, 26, 26);
+    }
+  </style>
+
+
+</head>
+
+<body>
+
+  <img class="background" src="photos/gym background.jpg" alt="gym photo" height="79" width="100%">
+  <h1>GYM BUDDY</h1>
+
+  <nav>
+    <ul>
+      <li>
+        <a href="#" target="_blank"><i class="fa-solid fa-dumbbell"></i>How To?</a>
+        <ul class="submenu">
+          <li><a href="http://127.0.0.1:5500/css/GYM/HipThrust.html" target="_blank">Hip Thrust</a></li>
+          <li><a href="https://www.youtube.com/results?search_query=squat" target="_blank">Squat</a></li>
+          <li><a href="https://www.youtube.com/results?search_query=leg+press" target="_blank">Leg Press</a></li>
+          <li><a href="https://www.youtube.com/results?search_query=deadlift" target="_blank">Deadlift</a></li>
+        </ul>
+      </li>
+      <li><a href="#"><i class="fa-solid fa-brain"></i>bilemedim</a>
+
+
+
+      </li>
+      <li><a href="http://127.0.0.1:5500/css/GYM/Calculator.html" target="_blank"><i
+            class="fa-solid fa-calculator"></i>Calculator</a></li>
+      <li><a href="https://www.alifesaglikgrubu.com.tr/makale/diyet-listesi/3740" target="_blank"><i
+            class="fa-solid fa-utensils"></i>Diets</a></li>
+    </ul>
+  </nav>
+  <script src="app.js"></script>
+</body>
+
+</html>

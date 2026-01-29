@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Calculator</title>
+    <style>
+        body {
+            background-color: black;
+            color: #cbc6c6;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;   
+            height: 100vh;
+            margin: 0;
+        }
+
+        table {
+            border: 6px solid rgb(215, 26, 26);
+            padding: 40px;
+        }
+
+        td {
+            padding: 10px;
+            font-size: 20px;
+        }
+
+        input[type="number"] {
+            padding: 5px;
+            width: 100px;
+            font-size:15px;
+            color:black;
+        }
+    </style>
+</head>
+<body>
+    <form id="calculatorForm">
+        <table>           
+            <tr>
+                <td>Height (cm):</td>
+                <td><input type="number" id="boy" required></td>
+            </tr>
+
+            <tr>
+                <td>Weight (kg):</td>
+                <td><input type="number" id="kilo" required></td>
+            </tr>
+
+            <tr>
+                <td>Age:</td>
+                <td><input type="number" id="yas"></td>
+            </tr>
+
+            <tr>
+                <td>Gender:</td>
+                <td>
+                  <input type="radio" name="cinsiyet" id="kadın" value="kadın" required> Woman
+                  <input type="radio" name="cinsiyet" id="erkek" value="erkek"> Man
+                </td>
+            </tr>
+
+            <tr>
+                <td>Ideal Weight:</td>
+                <td><span id="idealKiloSonuc"></span></td>
+            </tr>
+
+            <tr>
+                <td colspan="2" style="text-align:center;">
+                    <button type="submit">Calculate</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+
+  <script src="app.js"></script>
+
+</body>
+</html>

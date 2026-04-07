@@ -1,31 +1,45 @@
-# Gereksinim Analizi
+## Gereksinim Analizi
 
-Tüm gereksinimlerinizi çıkardıktan sonra beraber tartışıyoruz ve son gereksinimlerin isimlerini hangi API metoduna karşılık geleceğini ve kısa açıklamalarını buraya numaralı bir şekilde yazıyorsunuz. Daha sonra aşağıya herkes kendi gereksinimiyle ilgili sayfayı oluşturmalı ve kendi sayfasında kendine ait gereksinimleri numaralı bir şekilde listeleyerek her bir gereksinimin açıklamalarını yazmalı. Toplamda grup üyesi sayısı kadar sayfa oluşturulmalı. Her grup üyesine eşit sayıda gereksinim atanmalı.
+# 1. POST: Sporcu Kaydı Oluşturma
 
-## Gereksinim Sayıları (En Az)
+Açıklama: Sisteme giriş yapacak kullanıcıların ad, e-posta ve şifre bilgileri alınarak kayıtları gerçekleştirilir.
 
-- **1 Kişi:** 10 gereksinim
-- **2 Kişi:** 16 gereksinim
-- **3 Kişi:** 21 gereksinim
-- **4 Kişi:** 24 gereksinim
-- **5 Kişi:** 30 gereksinim
+# 2. POST: Egzersiz Kaydı Ekleme
 
-## Gereksinimlerde Uyulması Gereken Kurallar
+Açıklama: Kullanıcının yaptığı antrenmanın adı, set sayısı, tekrar sayısı ve ağırlık bilgisi sisteme kaydedilir.
 
-1. **İsimler anlamlı olmalı:** Gereksinim isimleri net ve anlaşılır olmalıdır.
-2. **Açıklamalar net olmalı:** Her gereksinimin açıklaması açık ve anlaşılır şekilde yazılmalıdır.
-3. **Açıklamalar teknik jargon ve kısaltmalar içermemeli:** Gereksinim açıklamaları herkesin anlayabileceği basit bir dille yazılmalıdır.
-4. **Gereksinim isimleri çok uzun olmamalı ve bir eylem bildirmeli:** 
-   - İsimler kısa ve öz olmalıdır
-   - Bir eylem fiili içermelidir
-   - Örnekler: "Kayıt Olma", "Giriş Yapma", "Profil Güncelleme", "Hesap Silme"
+# 3. GET: Geçmiş Egzersizleri Listeleme
 
-# Tüm Gereksinimler 
+Açıklama: Kullanıcının daha önceden sisteme girdiği tüm antrenman geçmişi tarih sırasına göre ekranda gösterilir.
 
-1. **Giriş Yapma** (Ali Tutar)
-2. **Üye Olma** (Ali Tutar)
-3. ..
-4. ..
+# 4. PUT: Egzersiz Verisini Güncelleme
+
+Açıklama: Yanlış girilen bir antrenmanın set, tekrar veya ağırlık bilgisi sistem üzerinde yenilenir.
+
+# 5. DELETE: Egzersiz Kaydını Silme
+
+Açıklama: İptal edilen veya yanlışlıkla eklenen bir antrenman verisi sistemden tamamen kaldırılır.
+
+# 6. POST: Vücut Ölçüsü Ekleme
+
+Açıklama: Gelişimi takip etmek için kullanıcının güncel kilo, boy ve yağ oranı bilgileri sisteme eklenir.
+
+# 7. GET: Gelişim İstatistiklerini Listeleme
+
+Açıklama: Kullanıcının vücut ölçülerindeki değişimler ve kaldırdığı ağırlıkların zaman içindeki artışı listelenir.
+
+# 8. PUT: Hedef Kilo Güncelleme
+
+Açıklama: Kullanıcının ulaşmak istediği hedef kilo bilgisi güncel duruma göre değiştirilir.
+
+# 9. DELETE: Hatalı Ölçümü Silme
+
+Açıklama: Yanlış girilmiş bir vücut ölçüsü kaydı sistemden silinir.
+
+# 10. GET: Yapay Zeka ile Antrenman Önerisi Alma 
+
+Açıklama: Yapay zeka kullanılarak, kullanıcının son antrenman verileri analiz edilir ve bir sonraki gün hangi kas grubunu çalıştırması gerektiği hesaplanarak kullanıcıya sunulur.
+
 # Gereksinim Dağılımları
 
 1. [Ali Tutar'ın Gereksinimleri](Ali-Tutar/Ali-Tutar-Gereksinimler.md)

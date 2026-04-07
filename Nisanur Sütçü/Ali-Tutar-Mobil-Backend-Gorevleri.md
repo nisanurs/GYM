@@ -1,62 +1,89 @@
-# Ali Tutar'ın Mobil Backend Görevleri
-**Mobil Front-end ile Back-end Bağlanmış Test Videosu:** [Link buraya eklenecek](https://example.com)
+1. Sporcu Kayıt (Üye Olma) Servisi
+API Endpoint: POST /api/auth/register
 
-## 1. Üye Olma (Kayıt) Servisi
-- **API Endpoint:** `POST /auth/register`
-- **Görev:** Mobil uygulamada kullanıcı kayıt işlemini gerçekleştiren servis entegrasyonu
-- **İşlevler:**
-  - Kullanıcı bilgilerini (email, password, firstName, lastName) toplama
-  - Form validasyonu (email formatı, şifre güvenliği kontrolü)
-  - API'ye POST isteği gönderme
-  - Başarılı kayıt durumunda kullanıcıyı giriş ekranına yönlendirme
-  - Hata durumlarını yakalama ve kullanıcıya gösterilmesi (409 Conflict, 400 Bad Request)
-- **Teknik Detaylar:**
-  - HTTP Client kullanımı (Retrofit/OkHttp - Android, URLSession/Alamofire - iOS)
-  - Request/Response model sınıfları oluşturma
-  - Error handling ve retry mekanizması
-  - Loading state yönetimi
+Görev: Mobil uygulamada yeni sporcu kaydını gerçekleştiren servis entegrasyonu.
 
-## 2. Kullanıcı Bilgilerini Görüntüleme Servisi
-- **API Endpoint:** `GET /users/{userId}`
-- **Görev:** Kullanıcı profil bilgilerini API'den çekip mobil uygulamada gösterme
-- **İşlevler:**
-  - JWT token ile kimlik doğrulama
-  - Kullanıcı ID'sini kullanarak profil bilgilerini getirme
-  - Gelen veriyi parse edip UI'da gösterme
-  - Token süresi dolmuşsa refresh token ile yenileme
-  - Offline durumda cache'den veri gösterme
-- **Teknik Detaylar:**
-  - Authentication header ekleme (Bearer Token)
-  - Response caching stratejisi
-  - Token refresh mekanizması
-  - Error handling (401 Unauthorized, 403 Forbidden, 404 Not Found)
+İşlevler:
 
-## 3. Kullanıcı Bilgilerini Güncelleme Servisi
-- **API Endpoint:** `PUT /users/{userId}`
-- **Görev:** Kullanıcı profil bilgilerini güncelleme işlemini gerçekleştirme
-- **İşlevler:**
-  - Profil düzenleme ekranından gelen verileri toplama
-  - Form validasyonu (email formatı, telefon formatı vb.)
-  - API'ye PUT isteği gönderme
-  - Başarılı güncelleme sonrası cache'i güncelleme
-  - Optimistic UI update (kullanıcı deneyimini iyileştirme)
-- **Teknik Detaylar:**
-  - Request body oluşturma (firstName, lastName, email, phone)
-  - Partial update desteği (yalnızca değişen alanları gönderme)
-  - Conflict resolution (eşzamanlı güncelleme durumları)
-  - Error handling ve kullanıcı bildirimleri
+Sporcu bilgilerini (ad, email, şifre) form üzerinden toplama.
 
-## 4. Kullanıcı Silme Servisi
-- **API Endpoint:** `DELETE /users/{userId}`
-- **Görev:** Kullanıcı hesabını silme işlemini gerçekleştirme
-- **İşlevler:**
-  - Kullanıcıya silme işlemi için onay dialog'u gösterme
-  - API'ye DELETE isteği gönderme
-  - Başarılı silme sonrası local storage ve cache'i temizleme
-  - Kullanıcıyı login ekranına yönlendirme
-  - Token'ı geçersiz kılma
-- **Teknik Detaylar:**
-  - Destructive action için confirmation dialog
-  - Local data cleanup (SharedPreferences/UserDefaults, cache, database)
-  - Logout işlemi entegrasyonu
-  - Error handling (401, 403, 404)
+Form validasyonu (Şifre uzunluğu ve email formatı kontrolü).
+
+API'ye POST isteği göndererek veritabanında kullanıcı oluşturma.
+
+Başarılı kayıt sonrası kullanıcıyı antrenman paneline yönlendirme.
+
+Hata durumlarını (Örn: Bu email zaten kayıtlı - 409) kullanıcıya bildirme.
+
+Teknik Detaylar:
+
+HTTP Client kullanımı (Axios / Fetch API).
+
+İstek ve Yanıt (Request/Response) için model sınıflarının oluşturulması.
+
+Yükleme durumu (Loading state) yönetimi.
+
+2. Antrenman Geçmişi Görüntüleme Servisi
+API Endpoint: GET /api/workouts
+
+Görev: Kullanıcının geçmiş antrenmanlarını API'den çekip mobil listede gösterme.
+
+İşlevler:
+
+JWT (Bearer Token) ile güvenli kimlik doğrulama.
+
+Kullanıcıya özel antrenman listesini (tarih, egzersiz adı, ağırlık) getirme.
+
+Gelen JSON verisini parse edip mobil arayüzde (FlatList/Scrollview) gösterme.
+
+İnternet yoksa eski verileri önbellekten (Cache) gösterme.
+
+Teknik Detaylar:
+
+Authentication header (Authorization: Bearer <token>) yönetimi.
+
+LocalStorage veya AsyncStorage kullanarak veri saklama.
+
+Hata yakalama (401 Unauthorized durumunda login ekranına yönlendirme).
+
+3. Egzersiz Verisi Güncelleme Servisi
+API Endpoint: PUT /api/workouts/{workoutId}
+
+Görev: Mobil cihaz üzerinden hatalı girilen set/tekrar bilgilerini güncelleme.
+
+İşlevler:
+
+Düzenleme ekranından gelen yeni set/tekrar verilerini toplama.
+
+API'ye PUT isteği göndererek ilgili antrenman kaydını güncelleme.
+
+Güncelleme sonrası ana ekrandaki antrenman listesini otomatik yenileme.
+
+Teknik Detaylar:
+
+Dinamik URL parametresi (workoutId) kullanımı.
+
+Sadece değişen alanların (partial update) gönderilmesi.
+
+"Optimistic UI Update" ile veri güncellenirken kullanıcıya anlık bildirim.
+
+4. Kayıtlı Antrenman/Ölçüm Silme Servisi
+API Endpoint: DELETE /api/workouts/{workoutId} veya /api/measurements/{id}
+
+Görev: Kullanıcının istediği kaydı sistemden kalıcı olarak temizleme.
+
+İşlevler:
+
+Silme işlemi öncesi kullanıcıya "Emin misiniz?" onay kutusu (Alert Dialog) gösterme.
+
+API'ye DELETE isteği göndererek veriyi MongoDB'den temizleme.
+
+Başarılı silme sonrası ilgili satırı mobil arayüzden anında kaldırma.
+
+Teknik Detaylar:
+
+Destructive action (Yıkıcı eylem) için onay mekanizması.
+
+Backend senkronizasyonu sonrası UI state güncellemesi.
+
+Error handling (404 Not Found durumunda uyarı gösterme).

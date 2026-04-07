@@ -12,7 +12,7 @@ info:
   version: 1.0.0
   contact:
     name: Nisanur Sütçü
-    email: nisanur@example.com
+    email: niisanur.st@gmail.com
 
 servers:
   - url: http://localhost:5000/v1

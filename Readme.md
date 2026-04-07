@@ -1,26 +1,70 @@
-# GYM Management System (Spor Salonu Yönetim Sistemi)
+# GYMBUDDY
 
-![Project Vision](./Requirements/project_vision_v3.png)
 
-## 📝 Proje Hakkında
-Bu proje, sporcuların antrenmanlarını takip edebildiği, vücut gelişimlerini izleyebildiği ve yapay zeka desteğiyle antrenman önerileri alabildiği kapsamlı bir web ve mobil tabanlı yönetim sistemidir.
+## Proje Hakkında
 
-## 👤 Geliştirici Bilgileri
-* **Ad Soyad:** Nisanur [Soyadın]
-* **Öğrenci No:** 2311012071
-* **Üniversite:** Süleyman Demirel Üniversitesi (SDÜ)
-* **Bölüm:** Bilgisayar Mühendisliği (3. Sınıf)
+![Ürün Tanıtım Görseli](GYMBUDDY.png)
 
-## 🚀 Kullanılan Teknolojiler
-* **Frontend:** React.js
-* **Backend:** Node.js (Express)
-* **Veritabanı:** MongoDB
-* **Mobil Uyumluluk:** Responsive Tasarım
 
-## 📋 Proje Gereksinimleri (Özet)
-Sistem temel olarak şu fonksiyonları yerine getirmektedir:
-1. Kullanıcı ve Personel Kayıt İşlemleri
-2. Detaylı Egzersiz ve Set Takibi
-3. Vücut Ölçümleri ve Gelişim İstatistikleri
-4. Yapay Zeka Destekli Antrenman Planlama
+
+**Proje Tanımı:** 
+> Bu proje, sporcuların antrenman ve gelişim süreçlerini dijitalleştiren, mobil uyumlu bir yönetim sistemidir.
+
+
+
+**🏋️‍♂️ GymBuddy: Senin Dijital Antrenman Partnerin**
+GymBuddy, spor salonundaki karmaşayı sona erdirmek ve antrenman deneyimini tamamen kişiselleştirmek için tasarlandı. Geniş egzersiz kütüphanesi ve kullanıcı dostu arayüzü sayesinde, sporcuların sadece ağırlıklara odaklanmasını sağlarken, tüm teknik detayları arka planda profesyonelce yönetiyoruz.
+
+Sistemimiz; kaliteli bir spor deneyimi için gereken her detayı, modern ve hızlı bir teknoloji yığınıyla sunuyor. GymBuddy kullanıcıları, antrenmanlarını saniyeler içinde kaydedebilir, vücut gelişimlerini detaylı grafiklerle izleyebilir ve satın alma/üyelik süreçlerinde tamamen sorunsuz bir deneyim yaşayabilirler.
+
+Neden GymBuddy?
+
+Akıllı Takip: Yapılan her set ve tekrar, gelişiminizi analiz etmek üzere güvenli veritabanımızda saklanır.
+
+Yapay Zeka Desteği: Geçmiş verilerinizden öğrenen akıllı algoritmamız, bir sonraki adımda hangi kas grubuna odaklanmanız gerektiğini size fısıldar.
+
+Hızlı ve Güvenli: Node.js ve MongoDB tabanlı güçlü altyapımızla, verileriniz her an parmaklarınızın ucunda.
+
+Mobil Öncelikli Deneyim: Spor salonunda telefonunuzla etkileşim kurarken sizi yormayan, "Strong" uygulaması sadeliğinde bir tasarım anlayışı.
+
+
+
+**Proje Kategorisi:** 
+Sağlık ve Fitness Teknolojileri
+
+
+
+**Referans Uygulama:** 
+> [Strong](http://strong.app/)
+
+
+
+## Proje Linkleri
+
+- **REST API Adresi:** [api.yazmuh.com](https://api.yazmuh.com)
+- **Web Frontend Adresi:** [frontend.yazmuh.com](https://frontend.yazmuh.com)
+
+
+
+## Proje Ekibi
+
+**Grup Adı:** 
+> MeandMine
+
+**Ekip Üyeleri:** 
+Nisanur Sütçü
+
+
+
+## Dokümantasyon
+
+Proje dokümantasyonuna aşağıdaki linklerden erişebilirsiniz:
+
+1. [Gereksinim Analizi](Gereksinim-Analizi.md)
+2. [REST API Tasarımı](API-Tasarimi.md)
+3. [REST API](Rest-API.md)
+4. [Web Front-End](WebFrontEnd.md)
+5. [Mobil Front-End](MobilFrontEnd.md)
+6. [Mobil Backend](MobilBackEnd.md)
+7. [Video Sunum](Sunum.md)
 

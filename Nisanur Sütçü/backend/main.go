@@ -36,7 +36,10 @@ func main() {
 				"message": "Tebrikler Nisa! Token onaylandı, gizli verilere eriştin. 🕵️‍♀️",
 			})
 		})
-
+		protected.POST("/workouts", controllers.CreateWorkout)
+		protected.GET("/workouts", controllers.GetWorkouts)
+		protected.DELETE("/workouts/:id", controllers.DeleteWorkout)
+		protected.PUT("/workouts/:id", controllers.UpdateWorkout)
 	}
 	r.Run(":5000")
 }

@@ -4,6 +4,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// Go'ya verinin nasıl görüneceğini öğretiyoruz
 type Workout struct {
 	ID       primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	UserID   primitive.ObjectID `json:"user_id" bson:"user_id"`

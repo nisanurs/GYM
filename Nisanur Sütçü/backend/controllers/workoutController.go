@@ -16,21 +16,38 @@ import (
 // 1. Antrenman Ekle (POST)
 func CreateWorkout(c *gin.Context) {
 	var workout models.Workout
+
+	// 1. Gelen JSON'ı bir kez ve tam oku
 	if err := c.ShouldBindJSON(&workout); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Veri formatı hatalı: " + err.Error()})
 		return
 	}
 
-	collection := database.GetCollection("workouts")
+	// 2. Middleware'den gelen kullanıcı ID'sini al
+	userID, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Kullanıcı kimliği bulunamadı!"})
+		return
+	}
+
+	// 3. Antrenmana ID'yi bas
+	workout.UserID = userID.(primitive.ObjectID)
+
+	// 4. Veritabanı işlemleri için context ayarla
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	// 5. Veritabanına kaydet
+	collection := database.GetCollection("workouts")
 	_, err := collection.InsertOne(ctx, workout)
+
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Kaydedilemedi"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Veritabanına kaydedilemedi!"})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "Antrenman kaydedildi! 💪"})
+
+	// 6. Başarı mesajı
+	c.JSON(http.StatusCreated, gin.H{"message": "Antrenman başarıyla kaydedildi! 💪"})
 }
 
 // 2. Geçmiş Egzersizleri Listeleme (GET) - Tarih Sırasına Göre

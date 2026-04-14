@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"gymbuddy/database"
 	"gymbuddy/models"
 	"net/http"
@@ -23,28 +22,24 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	// Kullanıcının gönderdiği şifreyi (user.Password) alıp karmaşık bir hale (hash) getiriyoruz.
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Şifre işlenirken hata oluştu!"})
-		return
-	}
-	// Artık gerçek şifre yerine bu karmaşık hali (hash) modele geri yüklüyoruz.
+	// Şifreleme işlemleri 
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	user.Password = string(hashedPassword)
 
 	userCollection := database.GetCollection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	_, err = userCollection.InsertOne(ctx, user)
+	
+	result, err := userCollection.InsertOne(ctx, user) // InsertOne sonucunu 'result' değişkenine alıyoruz
 	if err != nil {
-		fmt.Println("MONGODB HATASI:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Kullanıcı kaydedilemedi!"})
 		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Hoş geldin " + user.Name + "! Şifren güvenle saklandı. 💪",
+		"id":      result.InsertedID, // İşte MongoDB'nin verdiği o meşhur ID!
 	})
 }
 

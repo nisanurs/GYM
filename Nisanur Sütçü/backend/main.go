@@ -40,6 +40,11 @@ func main() {
 		protected.GET("/workouts", controllers.GetWorkouts)
 		protected.DELETE("/workouts/:id", controllers.DeleteWorkout)
 		protected.PUT("/workouts/:id", controllers.UpdateWorkout)
+		protected.POST("/measures", controllers.AddBodyMeasure)
+		protected.PUT("/measures/:id", controllers.UpdateBodyMeasure)
+		protected.GET("/stats/body", controllers.GetBodyStats)
+		protected.PUT("/user/target/:id", controllers.UpdateTargetWeight)
+		protected.GET("/ai/recommend/:id", controllers.GetAIRecommendation)
 	}
 	r.Run(":5000")
 }

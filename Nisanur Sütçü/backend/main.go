@@ -4,7 +4,9 @@ package main
 //projenin calismaya baslayacagı yeri gosterir
 
 import (
+	"gymbuddy/controllers"
 	"gymbuddy/database"
+	"gymbuddy/middleware"
 	"net/http" // durum kodlarını kullanabilmek icin
 
 	"github.com/gin-gonic/gin"
@@ -22,5 +24,19 @@ func main() {
 		//gin.H: Bu Gin'e özel kısa bir yoldur. Bir map (anahtar-değer çifti) oluşturur. message anahtarına karşılık yazdırılmak istenen mesajı yerleştirir.
 	})
 
+	r.POST("/auth/register", controllers.RegisterUser)
+	r.POST("/auth/login", controllers.LoginUser)
+
+	protected := r.Group("/v1/api")
+	protected.Use(middleware.AuthMiddleware())
+	{
+
+		protected.GET("/secure-data", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Tebrikler Nisa! Token onaylandı, gizli verilere eriştin. 🕵️‍♀️",
+			})
+		})
+
+	}
 	r.Run(":5000")
 }

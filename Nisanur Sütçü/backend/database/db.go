@@ -16,7 +16,7 @@ var Client *mongo.Client
 // DBConnect veritabanı bağlantısını başlatan fonksiyondur
 func DBConnect() {
 
-	uri := "mongodb+srv://nisa:stcnokta@test.ek07wik.mongodb.net/GymBuddy?retryWrites=true&w=majority"
+	uri := "mongodb+srv://nisa:stcnokta@test.ek07wik.mongodb.net/GYMBUDDY?retryWrites=true&w=majority"
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -39,5 +39,5 @@ func DBConnect() {
 
 // GetCollection istediğimiz tabloya (koleksiyona) hızlıca ulaşmamızı sağlar
 func GetCollection(collectionName string) *mongo.Collection {
-	return Client.Database("GymBuddy").Collection(collectionName)
+	return Client.Database("GYMBUDDY").Collection(collectionName)
 }

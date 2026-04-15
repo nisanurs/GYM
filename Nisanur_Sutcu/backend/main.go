@@ -3,7 +3,7 @@ package main
 import (
 	"gymbuddy/controllers"
 	"gymbuddy/database"
-	"gymbuddy/middleware"
+	//"gymbuddy/middleware"
 	"net/http"
 	"os"
 
@@ -41,7 +41,7 @@ func main() {
 
 	// Korumalı Rotalar
 	protected := r.Group("/v1/api")
-	protected.Use(middleware.AuthMiddleware())
+	//protected.Use(middleware.AuthMiddleware())
 	{
 		protected.GET("/secure-data", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{

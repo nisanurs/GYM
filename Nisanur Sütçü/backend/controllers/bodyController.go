@@ -16,26 +16,41 @@ import (
 func AddBodyMeasure(c *gin.Context) {
 	var measure models.BodyMeasure
 
+	// 1. Postman'den gelen JSON verisini modele bağla
 	if err := c.ShouldBindJSON(&measure); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Veri formatı hatalı!"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Veri formatı hatalı: " + err.Error()})
 		return
 	}
 
-	collection := database.GetCollection("measures")
+	// 2. KRİTİK NOKTA: AuthMiddleware'den gelen kullanıcı ID'sini al
+	// Eğer kullanıcı giriş yapmadıysa burası çalışmaz
+	userID, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Lütfen önce giriş yapın!"})
+		return
+	}
+
+	// 3. SIFIRLARI YOK EDEN SATIR:
+	// Veritabanına kaydetmeden önce "bu ölçü Nisanur'undur" diyoruz.
+	measure.UserID = userID.(primitive.ObjectID)
+
+	// 4. Veritabanı işlemleri için zaman aşımı (context) ayarla
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// InsertOne bize sonucu (result) döner, içinde ID de vardır.
-	result, err := collection.InsertOne(ctx, measure)
+	// 5. Veritabanına kaydet
+	collection := database.GetCollection("measures")
+	_, err := collection.InsertOne(ctx, measure)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ölçü kaydedilemedi!"})
 		return
 	}
 
-	// Yanıtın içine InsertedID'yi ekliyoruz
+	// 6. Başarı mesajı
 	c.JSON(http.StatusCreated, gin.H{
-		"message": "Vücut ölçülerin başarıyla kaydedildi! 📏",
-		"id":      result.InsertedID, // İŞTE BURADA ID'Yİ VERİYORUZ
+		"message": "Vücut ölçülerin başarıyla kaydedildi! 📏✨",
+		"data":    measure,
 	})
 }
 
@@ -103,4 +118,45 @@ func GetBodyStats(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, stats)
+}
+
+// DeleteBodyMeasure: Belirli bir ölçü kaydını siler (DELETE)
+func DeleteBodyMeasure(c *gin.Context) {
+	// 1. URL'den ID'yi al
+	id := c.Param("id")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Geçersiz ölçü ID formatı!"})
+		return
+	}
+
+	// 2. Token'dan kullanıcı ID'sini al (Güvenlik için: Sadece kendi ölçünü sil)
+	userID, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Yetkisiz erişim!"})
+		return
+	}
+
+	collection := database.GetCollection("measures")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// 3. Silme filtresi: Hem ölçü ID'si hem kullanıcı ID'si tutmalı
+	filter := bson.M{
+		"_id":     objID,
+		"user_id": userID.(primitive.ObjectID),
+	}
+
+	result, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Silme işlemi başarısız!"})
+		return
+	}
+
+	if result.DeletedCount == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Kayıt bulunamadı veya silme yetkiniz yok!"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Vücut ölçüsü başarıyla silindi 🗑️"})
 }

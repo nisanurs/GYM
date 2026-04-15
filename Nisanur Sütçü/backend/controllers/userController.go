@@ -8,51 +8,40 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// UpdateTargetWeight: Kullanıcının sadece hedef kilo bilgisini günceller (8. Madde)
 func UpdateTargetWeight(c *gin.Context) {
-	// 1. URL'den hangi kullanıcının güncelleneceğini alıyoruz (:id)
-	id := c.Param("id")
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Geçersiz kullanıcı ID formatı!"})
+	// 1. ÖNEMLİ: ID'yi URL parametresinden DEĞİL, Token'dan (Middleware) alıyoruz
+	userID, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Kullanıcı kimliği bulunamadı, lütfen tekrar giriş yap!"})
 		return
 	}
 
-	// 2. Sadece hedef kiloyu almak için geçici bir yapı (struct) tanımlıyoruz
+	// 2. Gelen JSON verisini oku
 	var input struct {
-		TargetWeight float64 `json:"target_weight" binding:"required"`
+		TargetWeight float64 `json:"target_weight"`
 	}
-
-	// Postman'den gelen veriyi bu yapıya bağlıyoruz
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Lütfen geçerli bir hedef kilo giriniz!"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Veri formatı hatalı!"})
 		return
 	}
 
-	// 3. Veritabanı bağlantısı ve zaman aşımı ayarı
+	// 3. Veritabanında güncelleme yap
 	collection := database.GetCollection("users")
+
+	// userID zaten AuthMiddleware'de primitive.ObjectID'ye çevrilmişti
+	filter := bson.M{"_id": userID}
+	update := bson.M{"$set": bson.M{"target_weight": input.TargetWeight}}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// 4. MongoDB'de '$set' operatörü ile sadece target_weight alanını değiştiriyoruz
-	update := bson.M{
-		"$set": bson.M{
-			"target_weight": input.TargetWeight,
-		},
-	}
-
-	_, err = collection.UpdateOne(ctx, bson.M{"_id": objID}, update)
+	_, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Hedef güncellenirken bir hata oluştu!"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Veritabanı güncelleme hatası!"})
 		return
 	}
 
-	// 5. Başarı mesajı gönderiyoruz
-	c.JSON(http.StatusOK, gin.H{
-		"message":    "Hedef kilon başarıyla güncellendi! 🎯",
-		"new_target": input.TargetWeight,
-	})
+	c.JSON(http.StatusOK, gin.H{"message": "Hedef kilonuz başarıyla güncellendi! 🎯"})
 }

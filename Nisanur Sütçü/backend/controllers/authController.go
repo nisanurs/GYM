@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt" // Şifreleme kütüphanesi
 )
 
@@ -22,7 +23,7 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	// Şifreleme işlemleri 
+	// Şifreleme işlemleri
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	user.Password = string(hashedPassword)
 
@@ -30,7 +31,6 @@ func RegisterUser(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	
 	result, err := userCollection.InsertOne(ctx, user) // InsertOne sonucunu 'result' değişkenine alıyoruz
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Kullanıcı kaydedilemedi!"})
@@ -62,7 +62,7 @@ func LoginUser(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err := userCollection.FindOne(ctx, map[string]string{"email": input.Email}).Decode(&user)
+	err := userCollection.FindOne(ctx, bson.M{"email": input.Email}).Decode(&user)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "E-posta veya şifre hatalı!"})
 		return

@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	router := gin.Default()
 	database.DBConnect()
 	r := gin.Default()
 

@@ -63,5 +63,8 @@ func main() {
 	if port == "" {
 		port = "5000" // Eğer Render'dan gelmezse yerelde 5000 kullan
 	}
+	router.GET("/hello", func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": "Selam Nisa, ben buradayım!"})
+	})
 	router.Run(":" + port)
 }

@@ -1,21 +1,21 @@
 package main
 
-// KENDİM İCİN NOTLAR ALIYORUM
-//projenin calismaya baslayacagı yeri gosterir
-
 import (
 	"gymbuddy/controllers"
 	"gymbuddy/database"
 	"gymbuddy/middleware"
-	"net/http" // durum kodlarını kullanabilmek icin
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	router := gin.Default()
-	router.Use(func(c *gin.Context) {
+
+	r := gin.Default()
+
+	// CORS Ayarları
+	r.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
@@ -25,24 +25,24 @@ func main() {
 		}
 		c.Next()
 	})
+
 	database.DBConnect()
-	r := gin.Default()
 
 	// Test endpoint'i
 	r.GET("/v1/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Selam Nisa, GymBuddy backend çalışıyor! 🚀",
 		})
-		//gin.H: Bu Gin'e özel kısa bir yoldur. Bir map (anahtar-değer çifti) oluşturur. message anahtarına karşılık yazdırılmak istenen mesajı yerleştirir.
 	})
 
+	// Auth Rotaları
 	r.POST("/auth/register", controllers.RegisterUser)
 	r.POST("/auth/login", controllers.LoginUser)
 
+	// Korumalı Rotalar
 	protected := r.Group("/v1/api")
 	protected.Use(middleware.AuthMiddleware())
 	{
-
 		protected.GET("/secure-data", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"message": "Tebrikler Nisa! Token onaylandı, gizli verilere eriştin. 🕵️‍♀️",
@@ -59,9 +59,11 @@ func main() {
 		protected.GET("/ai/recommend", controllers.GetAIRecommendation)
 		protected.DELETE("/measures/:id", controllers.DeleteBodyMeasure)
 	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "5000" // Eğer Render'dan gelmezse yerelde 5000 kullan
+		port = "5000"
 	}
-	router.Run(":" + port)
+
+	r.Run(":" + port)
 }

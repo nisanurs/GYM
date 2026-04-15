@@ -12,9 +12,8 @@ info:
   version: 1.0.0
   contact:
     name: Nisanur Sütçü
-    email: niisanur.st@gmail.com
-    
-```yaml
+    email: niisanur.st@example.com
+
 servers:
   - url: http://localhost:5000/v1
     description: Geliştirme Sunucusu

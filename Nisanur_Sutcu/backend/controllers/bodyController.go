@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"gymbuddy/database"
 	"gymbuddy/models"
 	"net/http"
@@ -97,15 +98,15 @@ func UpdateBodyMeasure(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Vücut ölçülerin güncellendi! 🔄"})
 }
 
-// GetBodyStats: Kullanıcının gelişimini tarih sırasına göre getirir
 func GetBodyStats(c *gin.Context) {
 	collection := database.GetCollection("measures")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	// Verileri tarihe göre eskiden yeniye sıralıyoruz (Grafik için)
 	findOptions := options.Find().SetSort(bson.D{{Key: "date", Value: 1}})
-
 	cursor, err := collection.Find(ctx, bson.M{}, findOptions)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Veriler getirilemedi"})
 		return
@@ -117,7 +118,46 @@ func GetBodyStats(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, stats)
+	// --- FARK ANALİZİ KISMI ---
+	summary := "Gelişimini takip etmek için daha fazla ölçüm yapmalısın!"
+	n := len(stats)
+
+	if n >= 2 {
+		last := stats[n-1] // En yeni ölçüm
+		prev := stats[n-2] // Bir önceki ölçüm
+
+		wDiff := last.Weight - prev.Weight
+		aDiff := last.Arm - prev.Arm
+
+		// Mesajı hazırlayalım
+		var wMsg, aMsg string
+
+		if wDiff > 0 {
+			wMsg = fmt.Sprintf("%.1f kilo almışsın", wDiff)
+		} else if wDiff < 0 {
+			wMsg = fmt.Sprintf("%.1f kilo vermişsin", -wDiff)
+		} else {
+			wMsg = "Kilon sabit kalmış"
+		}
+
+		if aDiff > 0 {
+			aMsg = fmt.Sprintf("kolun %.1f cm kalınlaşmış", aDiff)
+		} else if aDiff < 0 {
+			aMsg = fmt.Sprintf("kolun %.1f cm incelmiş", -aDiff)
+		} else {
+			aMsg = "kol ölçün değişmemiş"
+		}
+
+		summary = fmt.Sprintf("Son ölçümüne göre %s ve %s! 🔥", wMsg, aMsg)
+	} else if n == 1 {
+		summary = "İlk ölçümünü kaydettin! GymBuddy ile hedefine adım adım ilerle. 🚀"
+	}
+
+	// Hem özet mesajı hem de tüm listeyi aynı anda dönüyoruz
+	c.JSON(http.StatusOK, gin.H{
+		"summary":    summary,
+		"stats_list": stats,
+	})
 }
 
 // DeleteBodyMeasure: Belirli bir ölçü kaydını siler (DELETE)

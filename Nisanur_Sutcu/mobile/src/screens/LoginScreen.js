@@ -1,41 +1,42 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import axios from 'axios';
+
+const BASE_URL = 'https://gym-hku6.onrender.com';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    // Boş alan kontrolü eklemek her zaman iyidir ;)
     if (!email || !password) {
       Alert.alert("Uyarı", "Lütfen email ve şifrenizi girin.");
       return;
     }
-
+    setLoading(true);
     try {
-      // Backend'e giriş isteği gönderiyoruz
-      const response = await axios.post('https://gym-hku6.onrender.com/auth/login', {
+      const response = await axios.post(`${BASE_URL}/auth/login`, {
         email: email.trim(),
-        password: password
+        password,
       });
 
-      // Giriş başarılı ve bilet (token) geldiyse
       if (response.status === 200 && response.data.token) {
-        console.log("Giriş Başarılı, Token Alındı!");
-
-        // Token'ı cebimize koyup BodyInput sayfasına gidiyoruz
-        navigation.navigate('BodyInput', { userToken: response.data.token });
+        // Var olan kullanıcı → direkt Home
+        navigation.navigate('Home', { userToken: response.data.token });
       }
     } catch (error) {
       console.error("Giriş Hatası:", error.response?.data);
       Alert.alert("Hata", "Giriş başarısız. Bilgilerini kontrol et!");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>GYM<Text style={{ color: '#ff0000' }}>BUDDY</Text></Text>
+      <Text style={styles.tagline}>Dijital Spor Arkadaşın</Text>
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -56,17 +57,13 @@ export default function LoginScreen({ navigation }) {
           value={password}
         />
       </View>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleLogin}
-      >
-        <Text style={styles.buttonText}>GİRİŞ YAP</Text>
+
+      <TouchableOpacity style={[styles.button, loading && { opacity: 0.7 }]} onPress={handleLogin} disabled={loading}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>GİRİŞ YAP</Text>}
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('Register')} style={{ marginTop: 20 }}>
-        <Text style={{ color: '#aaa', textAlign: 'center', fontSize: 14 }}>
-          Hesabın yok mu? <Text style={{ color: '#ff0000' }}>Kayıt Ol</Text>
-        </Text>
+        <Text style={styles.linkText}>Hesabın yok mu? <Text style={{ color: '#ff0000' }}>Kayıt Ol</Text></Text>
       </TouchableOpacity>
     </View>
   );
@@ -74,9 +71,11 @@ export default function LoginScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000', justifyContent: 'center', padding: 30 },
-  logo: { fontSize: 40, fontWeight: 'bold', color: '#fff', textAlign: 'center', marginBottom: 50 },
+  logo: { fontSize: 40, fontWeight: 'bold', color: '#fff', textAlign: 'center', marginBottom: 8 },
+  tagline: { color: '#555', textAlign: 'center', marginBottom: 50, fontSize: 13 },
   inputContainer: { marginBottom: 20 },
   input: { backgroundColor: '#1a1a1a', color: '#fff', padding: 15, borderRadius: 10, marginBottom: 15, borderBottomWidth: 2, borderBottomColor: '#333' },
   button: { backgroundColor: '#ff0000', padding: 18, borderRadius: 10, alignItems: 'center' },
-  buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 }
+  buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  linkText: { color: '#aaa', textAlign: 'center', fontSize: 14 },
 });

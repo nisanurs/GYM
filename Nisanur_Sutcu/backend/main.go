@@ -3,6 +3,7 @@ package main
 import (
 	"gymbuddy/controllers"
 	"gymbuddy/database"
+
 	//"gymbuddy/middleware"
 	"net/http"
 	"os"

@@ -5,65 +5,75 @@ import axios from 'axios';
 
 const BASE_URL = 'https://gym-hku6.onrender.com';
 
+const GOALS = [
+    { key: 'fat_loss', label: '🔥 Yağ Yakma' },
+    { key: 'muscle_gain', label: '💪 Kas Kazanma' },
+    { key: 'maintenance', label: '⚖️ Formu Koruma' },
+];
+
 export default function BodyInputScreen({ navigation, route }) {
     const { userToken } = route.params || {};
     const [weight, setWeight] = useState('');
     const [height, setHeight] = useState('');
-    const [fatRate, setFatRate] = useState('');
     const [targetWeight, setTargetWeight] = useState('');
+    const [selectedGoal, setSelectedGoal] = useState('');
 
     const handleNext = async () => {
-        if (!weight || !height) {
-            Alert.alert("Uyarı", "Lütfen en azından kilo ve boyunu gir!");
+        if (!weight || !height || !selectedGoal) {
+            Alert.alert("Uyarı", "Lütfen kilo, boy ve hedefini seç!");
             return;
         }
 
         try {
+            // 1. İlk ölçüyü kaydet
             await axios.post(`${BASE_URL}/v1/api/measures`, {
                 weight: parseFloat(weight),
                 height: parseFloat(height),
-                fat_rate: parseFloat(fatRate) || 0,
-                target_weight: parseFloat(targetWeight) || 0
+                fat_rate: 0,
+                target_weight: parseFloat(targetWeight) || 0,
+                date: new Date().toISOString().split('T')[0],
             }, {
                 headers: { 'Authorization': `Bearer ${userToken}` }
             });
 
+            // 2. Hedef kilonu kullanıcıya kaydet
+            if (targetWeight) {
+                await axios.put(`${BASE_URL}/v1/api/user/target`, {
+                    target_weight: parseFloat(targetWeight)
+                }, {
+                    headers: { 'Authorization': `Bearer ${userToken}` }
+                });
+            }
+
             navigation.navigate('Home', { userToken });
 
         } catch (error) {
-            console.error("Ölçü Kayıt Hatası:", error.response?.data);
-            Alert.alert(
-                "Hata",
-                "Ölçülerin kaydedilemedi.",
-                [
-                    { text: "Tekrar Dene" },
-                    {
-                        text: "Yine de Devam Et",
-                        onPress: () => navigation.navigate('Home', { userToken })
-                    }
-                ]
-            );
+            console.error("Kayıt Hatası:", error.response?.data);
+            Alert.alert("Hata", "Bilgiler kaydedilemedi.", [
+                { text: "Tekrar Dene" },
+                { text: "Devam Et", onPress: () => navigation.navigate('Home', { userToken }) }
+            ]);
         }
     };
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView>
-                <Text style={styles.header}>GÜNCEL <Text style={{ color: '#ff0000' }}>DURUMUN</Text></Text>
-                <Text style={styles.subText}>Analizini yapabilmemiz için lütfen güncel ölçülerini gir.</Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <Text style={styles.header}>HEDEF <Text style={{ color: '#ff0000' }}>BELİRLE</Text></Text>
+                <Text style={styles.subText}>Sana özel plan oluşturabilmemiz için başlangıç bilgilerini gir.</Text>
 
                 <View style={styles.form}>
-                    <Text style={styles.label}>Kilon (kg)</Text>
+                    <Text style={styles.label}>Mevcut Kilonuz (kg)</Text>
                     <TextInput
                         style={styles.input}
                         keyboardType="numeric"
-                        placeholder="Örn: 65"
+                        placeholder="Örn: 70"
                         placeholderTextColor="#555"
                         value={weight}
                         onChangeText={setWeight}
                     />
 
-                    <Text style={styles.label}>Boyun (cm)</Text>
+                    <Text style={styles.label}>Boyunuz (cm)</Text>
                     <TextInput
                         style={styles.input}
                         keyboardType="numeric"
@@ -73,28 +83,33 @@ export default function BodyInputScreen({ navigation, route }) {
                         onChangeText={setHeight}
                     />
 
-                    <Text style={styles.label}>Yağ Oranın (%)</Text>
+                    <Text style={styles.label}>Hedef Kilonuz (kg) — Opsiyonel</Text>
                     <TextInput
                         style={styles.input}
                         keyboardType="numeric"
-                        placeholder="Örn: 20"
-                        placeholderTextColor="#555"
-                        value={fatRate}
-                        onChangeText={setFatRate}
-                    />
-
-                    <Text style={styles.label}>Hedef Kilon (kg)</Text>
-                    <TextInput
-                        style={styles.input}
-                        keyboardType="numeric"
-                        placeholder="Örn: 60"
+                        placeholder="Örn: 65"
                         placeholderTextColor="#555"
                         value={targetWeight}
                         onChangeText={setTargetWeight}
                     />
 
+                    <Text style={styles.label}>Hedefin Nedir?</Text>
+                    <View style={styles.goalRow}>
+                        {GOALS.map((g) => (
+                            <TouchableOpacity
+                                key={g.key}
+                                style={[styles.goalBtn, selectedGoal === g.key && styles.goalBtnActive]}
+                                onPress={() => setSelectedGoal(g.key)}
+                            >
+                                <Text style={[styles.goalText, selectedGoal === g.key && styles.goalTextActive]}>
+                                    {g.label}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+
                     <TouchableOpacity style={styles.button} onPress={handleNext}>
-                        <Text style={styles.buttonText}>ANALİZİ GÖR 🚀</Text>
+                        <Text style={styles.buttonText}>BAŞLA 🚀</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
@@ -105,10 +120,15 @@ export default function BodyInputScreen({ navigation, route }) {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#000', padding: 20 },
     header: { fontSize: 28, fontWeight: 'bold', color: '#fff', textAlign: 'center', marginTop: 20 },
-    subText: { color: '#aaa', textAlign: 'center', marginBottom: 30, marginTop: 10 },
+    subText: { color: '#aaa', textAlign: 'center', marginBottom: 30, marginTop: 10, lineHeight: 20 },
     form: { backgroundColor: '#111', padding: 20, borderRadius: 15 },
-    label: { color: '#ff0000', fontWeight: 'bold', marginBottom: 5, fontSize: 14 },
+    label: { color: '#ff0000', fontWeight: 'bold', marginBottom: 8, fontSize: 13 },
     input: { backgroundColor: '#1a1a1a', color: '#fff', padding: 15, borderRadius: 10, marginBottom: 20, fontSize: 16 },
-    button: { backgroundColor: '#ff0000', padding: 18, borderRadius: 10, alignItems: 'center', marginTop: 10 },
-    buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 18 }
+    goalRow: { flexDirection: 'column', gap: 10, marginBottom: 25 },
+    goalBtn: { backgroundColor: '#1a1a1a', padding: 14, borderRadius: 10, borderWidth: 1, borderColor: '#333' },
+    goalBtnActive: { backgroundColor: '#ff0000', borderColor: '#ff0000' },
+    goalText: { color: '#aaa', fontWeight: 'bold', textAlign: 'center' },
+    goalTextActive: { color: '#fff' },
+    button: { backgroundColor: '#ff0000', padding: 18, borderRadius: 10, alignItems: 'center', marginTop: 5 },
+    buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 18 },
 });

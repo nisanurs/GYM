@@ -1,42 +1,75 @@
-# Gereksinim Analizi
+**1.Yeni Sporcu Kaydı**
 
-## 1. POST: Sporcu Kaydı Oluşturma
+   **API Metodu:** `POST /auth/register`
 
-Açıklama: Sisteme giriş yapacak kullanıcıların ad ve şifre bilgileri alınarak kayıtları gerçekleştirilir.
+   **Açıklama:** Kullanıcıların GymBuddy ekosistemine dahil olmasını sağlar. İsim, email ve güvenli şifre bilgilerini toplayarak veritabanında yeni bir sporcu profili oluşturur. Kayıt sonrası kullanıcı kendi antrenmanlarını yönetmeye hazır hale gelir.
 
-## 2. POST: Egzersiz Kaydı Ekleme
 
-Açıklama: Kullanıcının yaptığı antrenmanın adı, set sayısı, tekrar sayısı ve ağırlık bilgisi sisteme kaydedilir.
+**2.Sporcu Girişi**
 
-## 3. GET: Geçmiş Egzersizleri Listeleme
+   **API Metodu:** `POST /auth/login`
 
-Açıklama: Kullanıcının daha önceden sisteme girdiği tüm antrenman geçmişi tarih sırasına göre ekranda gösterilir.
+   **Açıklama:** Kayıtlı kullanıcıların sisteme güvenli bir şekilde erişim sağlamasını kontrol eder. Kullanıcının email ve şifre bilgilerini doğrulayarak, oturumun devamlılığı için benzersiz bir JWT (JSON Web Token) üretir. Bu token sayesinde sporcu, kendi özel antrenman verilerine ve vücut ölçümlerine erişim yetkisi kazanır.
 
-## 4. PUT: Egzersiz Verisini Güncelleme
 
-Açıklama: Yanlış girilen bir antrenmanın set, tekrar veya ağırlık bilgisi sistem üzerinde yenilenir.
+**3.Antrenman Kaydı Oluşturma**
 
-## 5. DELETE: Egzersiz Kaydını Silme
+   **API Metodu:** `POST /workouts`
 
-Açıklama: İptal edilen veya yanlışlıkla eklenen bir antrenman verisi sistemden tamamen kaldırılır.
+   **Açıklama:** Kullanıcının yaptığı egzersizleri (örneğin Bench Press, Squat) set, tekrar ve ağırlık verileriyle birlikte sisteme kaydetmesini sağlar. Her kayıt, o günkü performansın dijital günlüğe işlenmesidir.
 
-## 6. POST: Vücut Ölçüsü Ekleme
 
-Açıklama: Gelişimi takip etmek için kullanıcının güncel kilo, boy ve yağ oranı bilgileri sisteme eklenir.
+**4.Geçmiş Antrenmanları Listeleme**
 
-## 7. GET: Gelişim İstatistiklerini Listeleme
+   **API Metodu:** `GET /workouts`
 
-Açıklama: Kullanıcının vücut ölçülerindeki değişimler ve kaldırdığı ağırlıkların zaman içindeki artışı listelenir.
+   **Açıklama:** Kullanıcının bugüne kadar yaptığı tüm antrenman geçmişini kronolojik olarak listeler. Sporcunun hangi gün ne kadar ağırlık kaldırdığını ve gelişim trendini görmesine olanak tanır.
 
-## 8. PUT: Hedef Kilo Güncelleme
 
-Açıklama: Kullanıcının ulaşmak istediği hedef kilo bilgisi güncel duruma göre değiştirilir.
+**5.Egzersiz Verisi Güncelleme**
 
-## 9. DELETE: Hatalı Ölçümü Silme
+   **API Metodu:** `PUT /workouts/{workoutId}`
 
-Açıklama: Yanlış girilmiş bir vücut ölçüsü kaydı sistemden silinir.
+   **Açıklama:** Kullanıcının yanlış girdiği set veya ağırlık verilerini düzeltmesini sağlar. Örneğin, 60 kg yerine sehven 600 kg girilen bir kaydı, doğru değerle güncelleyerek istatistiklerin bozulmasını önler.
 
-## 10. GET: Yapay Zeka ile Antrenman Önerisi Alma 
 
-Açıklama: Yapay zeka kullanılarak, kullanıcının son antrenman verileri analiz edilir ve bir sonraki gün hangi kas grubunu çalıştırması gerektiği hesaplanarak kullanıcıya sunulur.
+**6.Hatalı Antrenman Kaydı Silme**
 
+   **API Metodu:** `DELETE /workouts/{workoutId}`
+
+   **Açıklama:** Kullanıcının tamamen yanlış oluşturduğu veya artık sistemde görmek istemediği bir antrenman kaydını kalıcı olarak silmesini sağlar. Bu işlem geri alınamaz ve ilgili veri MongoDB'den temizlenir.
+
+
+**7.Vücut Ölçüsü Ekleme**
+
+   **API Metodu:** `POST /measurements`
+
+   **Açıklama:** Kullanıcının periyodik olarak kilo, yağ oranı gibi fiziksel değişim verilerini sisteme girmesini sağlar. Bu veriler, gelişim grafiklerinin oluşturulması için temel teşkil eder.
+
+
+**8.Gelişim İstatistiklerini Görüntüleme**
+
+   **API Metodu:** `GET /measurements`
+
+   **Açıklama:** Kullanıcının fiziksel ölçümlerini (kilo kaybı, kas kazanımı vb.) analiz ederek anlamlı grafik verileri olarak sunar. Sporcunun hedefine ne kadar yaklaştığını görselleştirir.
+
+
+ **9. Fitness Hedeflerini Güncelleme**
+
+   **API Metodu:** `PUT /goals`
+
+   **Açıklama:** Kullanıcının sistemdeki hedef kilo veya antrenman sıklığı gibi kişisel hedeflerini değiştirmesine olanak tanır. Motivasyonun korunması için hedeflerin dinamik olarak güncellenmesini sağlar.
+
+
+ **10. Hatalı Ölçüm Verisini Silme**
+
+   **API Metodu:** `DELETE /measurements/{id}`
+
+   **Açıklama:** Yanlış girilen bir kilo veya vücut ölçüsü kaydının silinmesini sağlar. İstatistiklerin doğruluğunu korumak için kullanıcının hatalı veri girişlerini temizlemesine imkan tanır.
+
+
++.  **Yapay Zeka Antrenman Önerisi Alma**
+
+   **API Metodu:** `GET /ai/recommend`
+
+   **Açıklama:** Sistemin en yenilikçi özelliğidir. Kullanıcının son antrenman verilerini analiz ederek, bir sonraki spor gününde hangi kas grubuna odaklanması gerektiğine dair akıllı öneriler sunar.

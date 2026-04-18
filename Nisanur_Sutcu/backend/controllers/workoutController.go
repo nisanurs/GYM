@@ -10,56 +10,61 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options" // Sıralama (Sort) için bu lazım
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // 1. Antrenman Ekle (POST)
 func CreateWorkout(c *gin.Context) {
 	var workout models.Workout
 
-	// 1. Gelen JSON'ı bir kez ve tam oku
 	if err := c.ShouldBindJSON(&workout); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Veri formatı hatalı: " + err.Error()})
 		return
 	}
 
-	// 2. Middleware'den gelen kullanıcı ID'sini al
 	userID, exists := c.Get("userId")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Kullanıcı kimliği bulunamadı!"})
 		return
 	}
 
-	// 3. Antrenmana ID'yi bas
 	workout.UserID = userID.(primitive.ObjectID)
 
-	// 4. Veritabanı işlemleri için context ayarla
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// 5. Veritabanına kaydet
 	collection := database.GetCollection("workouts")
-	_, err := collection.InsertOne(ctx, workout)
-
+	result, err := collection.InsertOne(ctx, workout)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Veritabanına kaydedilemedi!"})
 		return
 	}
 
-	// 6. Başarı mesajı
-	c.JSON(http.StatusCreated, gin.H{"message": "Antrenman başarıyla kaydedildi! 💪"})
+	// Kaydedilen ID'yi de dön, frontend'de silme için lazım
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Antrenman başarıyla kaydedildi! 💪",
+		"id":      result.InsertedID,
+	})
 }
 
-// 2. Geçmiş Egzersizleri Listeleme (GET) - Tarih Sırasına Göre
+// 2. Geçmiş Egzersizleri Listeleme (GET)
 func GetWorkouts(c *gin.Context) {
+	// Sadece giriş yapan kullanıcının antrenmanlarını getir
+	userID, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Kullanıcı kimliği bulunamadı!"})
+		return
+	}
+
 	collection := database.GetCollection("workouts")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Tarihe göre azalan (en yeni en üstte) sıralama ekledik
 	findOptions := options.Find().SetSort(bson.D{{Key: "date", Value: -1}})
+	// Sadece bu kullanıcının kayıtları
+	filter := bson.M{"user_id": userID.(primitive.ObjectID)}
 
-	cursor, err := collection.Find(ctx, bson.M{}, findOptions)
+	cursor, err := collection.Find(ctx, filter, findOptions)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Veriler çekilemedi"})
 		return
@@ -71,13 +76,22 @@ func GetWorkouts(c *gin.Context) {
 		return
 	}
 
+	// nil yerine boş dizi dön (frontend'de crash olmaz)
+	if workouts == nil {
+		workouts = []models.Workout{}
+	}
+
 	c.JSON(http.StatusOK, workouts)
 }
 
 // 3. Egzersiz Verisini Güncelleme (PUT)
 func UpdateWorkout(c *gin.Context) {
 	id := c.Param("id")
-	objID, _ := primitive.ObjectIDFromHex(id)
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Geçersiz ID formatı!"})
+		return
+	}
 
 	var updateData models.Workout
 	if err := c.ShouldBindJSON(&updateData); err != nil {
@@ -85,23 +99,40 @@ func UpdateWorkout(c *gin.Context) {
 		return
 	}
 
+	userID, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Yetkisiz erişim!"})
+		return
+	}
+
 	collection := database.GetCollection("workouts")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Sadece değişen alanları güncellemek için $set kullanıyoruz
+	// Hem ID hem userID filtresi: başkasının kaydını güncelleyemesin
+	filter := bson.M{
+		"_id":     objID,
+		"user_id": userID.(primitive.ObjectID),
+	}
+
 	update := bson.M{
 		"$set": bson.M{
-			"type":     updateData.Type,
-			"duration": updateData.Duration,
-			"calories": updateData.Calories,
+			"exercise": updateData.Exercise,
+			"sets":     updateData.Sets,
+			"reps":     updateData.Reps,
+			"weight":   updateData.Weight,
 			"date":     updateData.Date,
 		},
 	}
 
-	_, err := collection.UpdateOne(ctx, bson.M{"_id": objID}, update)
+	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Güncelleme başarısız!"})
+		return
+	}
+
+	if result.MatchedCount == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Kayıt bulunamadı veya yetkiniz yok!"})
 		return
 	}
 
@@ -111,16 +142,38 @@ func UpdateWorkout(c *gin.Context) {
 // 4. Antrenman Sil (DELETE)
 func DeleteWorkout(c *gin.Context) {
 	id := c.Param("id")
-	objID, _ := primitive.ObjectIDFromHex(id)
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Geçersiz ID formatı!"})
+		return
+	}
+
+	userID, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Yetkisiz erişim!"})
+		return
+	}
 
 	collection := database.GetCollection("workouts")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	_, err := collection.DeleteOne(ctx, bson.M{"_id": objID})
+	// Güvenlik: sadece kendi kaydını silebilsin
+	filter := bson.M{
+		"_id":     objID,
+		"user_id": userID.(primitive.ObjectID),
+	}
+
+	result, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Silinemedi"})
 		return
 	}
+
+	if result.DeletedCount == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Kayıt bulunamadı veya yetkiniz yok!"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "Antrenman silindi 🗑️"})
 }

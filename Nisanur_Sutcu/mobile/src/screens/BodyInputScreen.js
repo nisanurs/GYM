@@ -1,36 +1,97 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import axios from 'axios';
 
-export default function BodyInputScreen({ navigation }) {
+const BASE_URL = 'https://gym-hku6.onrender.com';
+
+export default function BodyInputScreen({ navigation, route }) {
+    const { userToken } = route.params || {};
     const [weight, setWeight] = useState('');
     const [height, setHeight] = useState('');
     const [fatRate, setFatRate] = useState('');
     const [targetWeight, setTargetWeight] = useState('');
 
-    const handleNext = () => {
+    const handleNext = async () => {
+        if (!weight || !height) {
+            Alert.alert("Uyarı", "Lütfen en azından kilo ve boyunu gir!");
+            return;
+        }
 
-        navigation.navigate('Main');
+        try {
+            await axios.post(`${BASE_URL}/v1/api/measures`, {
+                weight: parseFloat(weight),
+                height: parseFloat(height),
+                fat_rate: parseFloat(fatRate) || 0,
+                target_weight: parseFloat(targetWeight) || 0
+            }, {
+                headers: { 'Authorization': `Bearer ${userToken}` }
+            });
+
+            navigation.navigate('Home', { userToken });
+
+        } catch (error) {
+            console.error("Ölçü Kayıt Hatası:", error.response?.data);
+            Alert.alert(
+                "Hata",
+                "Ölçülerin kaydedilemedi.",
+                [
+                    { text: "Tekrar Dene" },
+                    {
+                        text: "Yine de Devam Et",
+                        onPress: () => navigation.navigate('Home', { userToken })
+                    }
+                ]
+            );
+        }
     };
 
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
                 <Text style={styles.header}>GÜNCEL <Text style={{ color: '#ff0000' }}>DURUMUN</Text></Text>
-                <Text style={styles.subText}>Analizini yapabilmemiz için lütfen güncel ölçülerini gir Nisa.</Text>
+                <Text style={styles.subText}>Analizini yapabilmemiz için lütfen güncel ölçülerini gir.</Text>
 
                 <View style={styles.form}>
                     <Text style={styles.label}>Kilon (kg)</Text>
-                    <TextInput style={styles.input} keyboardType="numeric" placeholder="Örn: 65" placeholderTextColor="#555" onChangeText={setWeight} />
+                    <TextInput
+                        style={styles.input}
+                        keyboardType="numeric"
+                        placeholder="Örn: 65"
+                        placeholderTextColor="#555"
+                        value={weight}
+                        onChangeText={setWeight}
+                    />
 
                     <Text style={styles.label}>Boyun (cm)</Text>
-                    <TextInput style={styles.input} keyboardType="numeric" placeholder="Örn: 170" placeholderTextColor="#555" onChangeText={setHeight} />
+                    <TextInput
+                        style={styles.input}
+                        keyboardType="numeric"
+                        placeholder="Örn: 170"
+                        placeholderTextColor="#555"
+                        value={height}
+                        onChangeText={setHeight}
+                    />
 
                     <Text style={styles.label}>Yağ Oranın (%)</Text>
-                    <TextInput style={styles.input} keyboardType="numeric" placeholder="Örn: 20" placeholderTextColor="#555" onChangeText={setFatRate} />
+                    <TextInput
+                        style={styles.input}
+                        keyboardType="numeric"
+                        placeholder="Örn: 20"
+                        placeholderTextColor="#555"
+                        value={fatRate}
+                        onChangeText={setFatRate}
+                    />
 
                     <Text style={styles.label}>Hedef Kilon (kg)</Text>
-                    <TextInput style={styles.input} keyboardType="numeric" placeholder="Örn: 60" placeholderTextColor="#555" onChangeText={setTargetWeight} />
+                    <TextInput
+                        style={styles.input}
+                        keyboardType="numeric"
+                        placeholder="Örn: 60"
+                        placeholderTextColor="#555"
+                        value={targetWeight}
+                        onChangeText={setTargetWeight}
+                    />
 
                     <TouchableOpacity style={styles.button} onPress={handleNext}>
                         <Text style={styles.buttonText}>ANALİZİ GÖR 🚀</Text>

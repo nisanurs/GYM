@@ -27,7 +27,7 @@ func GetAIRecommendation(c *gin.Context) {
 	// AI'yı şimdilik simüle ediyoruz
 	c.JSON(http.StatusOK, gin.H{
 		"user":      user.Name,
-		"ai_advice": "Nisa, verilerin başarıyla analiz ediliyor. Bugün harika bir gün, antrenmanını aksatma! (AI servisi şu an bakımda, yakında burada olacak) ✨",
+		"ai_advice": "Verilerin başarıyla analiz ediliyor. Bugün harika bir gün, antrenmanını aksatma! (AI servisi şu an bakımda, yakında burada olacak) ✨",
 		"status":    "mock_active",
 	})
 }

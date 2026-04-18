@@ -10,6 +10,7 @@ import EditWorkoutScreen from './src/screens/EditWorkoutScreen';
 import MeasureScreen from './src/screens/MeasureScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
 import GoalsScreen from './src/screens/GoalsScreen';
+import StatsScreen from './src/screens/StatsScreen';
 
 const Stack = createStackNavigator();
 
@@ -29,6 +30,7 @@ export default function App() {
         <Stack.Screen name="Measure" component={MeasureScreen} />
         <Stack.Screen name="History" component={HistoryScreen} />
         <Stack.Screen name="Goals" component={GoalsScreen} />
+        <Stack.Screen name="Stats" component={StatsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -3,7 +3,8 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, ScrollVi
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 
-export default function TrainingScreen() {
+export default function TrainingScreen({ route }) {
+    const { userToken } = route.params || {};
     const [exercise, setExercise] = useState('');
     const [sets, setSets] = useState('');
     const [reps, setReps] = useState('');
@@ -26,12 +27,20 @@ export default function TrainingScreen() {
         };
 
         try {
-            // const res = await axios.post('https://gym-hku6.onrender.com/v1/api/workouts', payload);
-            Alert.alert("Başarılı", "Antrenman kaydedildi! 💪");
-            setLogs([payload, ...logs]); // Listeye geçici olarak ekle
-            setExercise(''); setSets(''); setReps(''); setWeight('');
+            const response = await axios.post('https://gym-hku6.onrender.com/v1/api/workouts', payload, {
+                headers: {
+                    // İŞTE KRİTİK SATIR: Bileti burada gösteriyoruz
+                    'Authorization': `Bearer ${userToken}`
+                }
+            });
+
+            if (response.status === 201 || response.status === 200) {
+                Alert.alert("Başarılı", "Antrenman kaydedildi! 💪");
+                // ... temizleme işlemleri ...
+            }
         } catch (err) {
-            Alert.alert("Hata", "Backend'e bağlanılamadı.");
+            console.error("Hata Detayı:", err.response?.data);
+            Alert.alert("Hata", "Yetki sorunu veya bağlantı hatası.");
         }
     };
 

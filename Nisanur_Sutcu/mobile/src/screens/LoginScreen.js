@@ -7,7 +7,7 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    // Boş alan kontrolü
+    // Boş alan kontrolü eklemek her zaman iyidir ;)
     if (!email || !password) {
       Alert.alert("Uyarı", "Lütfen email ve şifrenizi girin.");
       return;
@@ -25,7 +25,6 @@ export default function LoginScreen({ navigation }) {
         console.log("Giriş Başarılı, Token Alındı!");
 
         // Token'ı cebimize koyup BodyInput sayfasına gidiyoruz
-        // Not: Eğer senin rotan 'Home' ise 'BodyInput' yazan yeri 'Home' yapabilirsin
         navigation.navigate('BodyInput', { userToken: response.data.token });
       }
     } catch (error) {
@@ -57,12 +56,17 @@ export default function LoginScreen({ navigation }) {
           value={password}
         />
       </View>
-
       <TouchableOpacity
         style={styles.button}
-        onPress={handleLogin} // Fonksiyonu burada tetikliyoruz
+        onPress={handleLogin}
       >
         <Text style={styles.buttonText}>GİRİŞ YAP</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Register')} style={{ marginTop: 20 }}>
+        <Text style={{ color: '#aaa', textAlign: 'center', fontSize: 14 }}>
+          Hesabın yok mu? <Text style={{ color: '#ff0000' }}>Kayıt Ol</Text>
+        </Text>
       </TouchableOpacity>
     </View>
   );

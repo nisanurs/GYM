@@ -39,27 +39,16 @@ func main() {
 	// Auth Rotaları
 	r.POST("/auth/register", controllers.RegisterUser)
 	r.POST("/auth/login", controllers.LoginUser)
-
-	// Korumalı Rotalar
-	protected := r.Group("/v1/api")
-	//protected.Use(middleware.AuthMiddleware())
-	{
-		protected.GET("/secure-data", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "Tebrikler Nisa! Token onaylandı, gizli verilere eriştin. 🕵️‍♀️",
-			})
-		})
-		protected.POST("/workouts", controllers.CreateWorkout)
-		protected.GET("/workouts", controllers.GetWorkouts)
-		protected.DELETE("/workouts/:id", controllers.DeleteWorkout)
-		protected.PUT("/workouts/:id", controllers.UpdateWorkout)
-		protected.POST("/measures", controllers.AddBodyMeasure)
-		protected.PUT("/measures/:id", controllers.UpdateBodyMeasure)
-		protected.GET("/stats/body", controllers.GetBodyStats)
-		protected.PUT("/user/target", controllers.UpdateTargetWeight)
-		protected.GET("/ai/recommend", controllers.GetAIRecommendation)
-		protected.DELETE("/measures/:id", controllers.DeleteBodyMeasure)
-	}
+	r.POST("/workouts", controllers.CreateWorkout)
+	r.GET("/workouts", controllers.GetWorkouts)
+	r.DELETE("/workouts/:id", controllers.DeleteWorkout)
+	r.PUT("/workouts/:id", controllers.UpdateWorkout)
+	r.POST("/measures", controllers.AddBodyMeasure)
+	r.PUT("/measures/:id", controllers.UpdateBodyMeasure)
+	r.GET("/stats/body", controllers.GetBodyStats)
+	r.PUT("/user/target", controllers.UpdateTargetWeight)
+	r.GET("/ai/recommend", controllers.GetAIRecommendation)
+	r.DELETE("/measures/:id", controllers.DeleteBodyMeasure)
 
 	port := os.Getenv("PORT")
 	if port == "" {

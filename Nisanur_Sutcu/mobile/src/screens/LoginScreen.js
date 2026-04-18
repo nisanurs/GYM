@@ -1,33 +1,66 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import axios from 'axios';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const handleLogin = async () => {
+    // Boş alan kontrolü
+    if (!email || !password) {
+      Alert.alert("Uyarı", "Lütfen email ve şifrenizi girin.");
+      return;
+    }
+
+    try {
+      // Backend'e giriş isteği gönderiyoruz
+      const response = await axios.post('https://gym-hku6.onrender.com/auth/login', {
+        email: email.trim(),
+        password: password
+      });
+
+      // Giriş başarılı ve bilet (token) geldiyse
+      if (response.status === 200 && response.data.token) {
+        console.log("Giriş Başarılı, Token Alındı!");
+
+        // Token'ı cebimize koyup BodyInput sayfasına gidiyoruz
+        // Not: Eğer senin rotan 'Home' ise 'BodyInput' yazan yeri 'Home' yapabilirsin
+        navigation.navigate('BodyInput', { userToken: response.data.token });
+      }
+    } catch (error) {
+      console.error("Giriş Hatası:", error.response?.data);
+      Alert.alert("Hata", "Giriş başarısız. Bilgilerini kontrol et!");
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>GYM<Text style={{color: '#ff0000'}}>BUDDY</Text></Text>
-      
+      <Text style={styles.logo}>GYM<Text style={{ color: '#ff0000' }}>BUDDY</Text></Text>
+
       <View style={styles.inputContainer}>
-        <TextInput 
+        <TextInput
           style={styles.input}
           placeholder="Email"
           placeholderTextColor="#666"
+          autoCapitalize="none"
+          keyboardType="email-address"
           onChangeText={setEmail}
+          value={email}
         />
-        <TextInput 
+        <TextInput
           style={styles.input}
           placeholder="Şifre"
           placeholderTextColor="#666"
           secureTextEntry
           onChangeText={setPassword}
+          value={password}
         />
       </View>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('Home')} // Şimdilik direkt ana sayfaya atsın
+        onPress={handleLogin} // Fonksiyonu burada tetikliyoruz
       >
         <Text style={styles.buttonText}>GİRİŞ YAP</Text>
       </TouchableOpacity>

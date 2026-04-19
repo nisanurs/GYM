@@ -13,7 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// 1. Antrenman Ekle (POST)
 func CreateWorkout(c *gin.Context) {
 	var workout models.Workout
 
@@ -28,7 +27,7 @@ func CreateWorkout(c *gin.Context) {
 		return
 	}
 
-	workout.UserID = userID.(primitive.ObjectID)
+	workout.UserID = userID.(primitive.ObjectID) //Token'dan gelen userId'yi workout yapısına atarız. Böylece bu antrenmanın hangi kullanıcıya ait olduğunu veritabanında saklayabiliriz.
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -40,16 +39,14 @@ func CreateWorkout(c *gin.Context) {
 		return
 	}
 
-	// Kaydedilen ID'yi de dön, frontend'de silme için lazım
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Antrenman başarıyla kaydedildi! 💪",
 		"id":      result.InsertedID,
 	})
 }
 
-// 2. Geçmiş Egzersizleri Listeleme (GET)
 func GetWorkouts(c *gin.Context) {
-	// Sadece giriş yapan kullanıcının antrenmanlarını getir
+
 	userID, exists := c.Get("userId")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Kullanıcı kimliği bulunamadı!"})
@@ -61,7 +58,7 @@ func GetWorkouts(c *gin.Context) {
 	defer cancel()
 
 	findOptions := options.Find().SetSort(bson.D{{Key: "date", Value: -1}})
-	// Sadece bu kullanıcının kayıtları
+	//Bu komut, MongoDB'den workout verilerini çekerken onları tarihe göre sıralamamızı sağlar. "date" alanına göre azalan sırada (-1) sıralama yaparız, böylece en yeni antrenmanlar en üstte görünür.
 	filter := bson.M{"user_id": userID.(primitive.ObjectID)}
 
 	cursor, err := collection.Find(ctx, filter, findOptions)
@@ -71,12 +68,12 @@ func GetWorkouts(c *gin.Context) {
 	}
 
 	var workouts []models.Workout
+	//MongoDB'den çekilen verileri Go dilinde kullanabilmemiz için bu verileri models.Workout türünde bir dilim (slice) içine atarız. Böylece bu antrenmanları telefona JSON formatında gönderebiliriz.
 	if err = cursor.All(ctx, &workouts); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Veri dönüştürme hatası!"})
 		return
 	}
 
-	// nil yerine boş dizi dön (frontend'de crash olmaz)
 	if workouts == nil {
 		workouts = []models.Workout{}
 	}
@@ -84,7 +81,6 @@ func GetWorkouts(c *gin.Context) {
 	c.JSON(http.StatusOK, workouts)
 }
 
-// 3. Egzersiz Verisini Güncelleme (PUT)
 func UpdateWorkout(c *gin.Context) {
 	id := c.Param("id")
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -109,7 +105,6 @@ func UpdateWorkout(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Hem ID hem userID filtresi: başkasının kaydını güncelleyemesin
 	filter := bson.M{
 		"_id":     objID,
 		"user_id": userID.(primitive.ObjectID),
@@ -139,7 +134,6 @@ func UpdateWorkout(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Egzersiz başarıyla güncellendi! 🔄"})
 }
 
-// 4. Antrenman Sil (DELETE)
 func DeleteWorkout(c *gin.Context) {
 	id := c.Param("id")
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -158,7 +152,6 @@ func DeleteWorkout(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Güvenlik: sadece kendi kaydını silebilsin
 	filter := bson.M{
 		"_id":     objID,
 		"user_id": userID.(primitive.ObjectID),

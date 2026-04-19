@@ -23,6 +23,7 @@ func DBConnect() {
 
 	// Bağlantı seçeneklerini ayarla ve bağlan
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	//Bu komut, MongoDB Atlas'a bağlanmak için gerekli ayarları yapar ve bağlantıyı başlatır. "uri" değişkeni, MongoDB Atlas'taki veritabanımıza nasıl bağlanacağımızı gösteren bir bağlantı dizesidir. Bu dize içinde kullanıcı adı, şifre, sunucu adresi ve veritabanı adı gibi bilgiler bulunur.
 	if err != nil {
 		log.Fatal("Bağlantı hatası oluştu: ", err)
 	}
@@ -33,11 +34,11 @@ func DBConnect() {
 		log.Fatal("Veritabanına ulaşılamıyor, ping başarısız: ", err)
 	}
 
-	fmt.Println("MongoDB Atlas'a başarıyla bağlandık! 💪")
+	fmt.Println("MongoDB Atlas'a başarıyla bağlandık! ")
 	Client = client
 }
 
-// GetCollection istediğimiz tabloya (koleksiyona) hızlıca ulaşmamızı sağlar
 func GetCollection(collectionName string) *mongo.Collection {
 	return Client.Database("GYMBUDDY").Collection(collectionName)
+	//Bu komut, MongoDB Atlas'taki "GYMBUDDY" adlı veritabanından istediğimiz koleksiyonu (örneğin "users", "workouts", "measures") hızlıca almamızı sağlar. Böylece diğer dosyalarda bu fonksiyonu kullanarak kolayca koleksiyonlara erişebiliriz.
 }

@@ -35,8 +35,8 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// 4. KRİTİK NOKTA: Token içindeki Kullanıcı ID'sini çıkar ve Sakla
-		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		//  Token içindeki Kullanıcı ID'sini çıkar ve Sakla
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid { // Token geçerliyse claims'leri al
 			// Login olurken "id" olarak kaydettiğimiz string'i alıyoruz
 			userIDStr, ok := claims["user_id"].(string)
 

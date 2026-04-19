@@ -4,6 +4,7 @@ import (
 	"context"
 	"gymbuddy/database"
 	"gymbuddy/models"
+	"gymbuddy/queue"
 	"net/http"
 	"time"
 
@@ -27,22 +28,35 @@ func CreateWorkout(c *gin.Context) {
 		return
 	}
 
-	workout.UserID = userID.(primitive.ObjectID) //Token'dan gelen userId'yi workout yapısına atarız. Böylece bu antrenmanın hangi kullanıcıya ait olduğunu veritabanında saklayabiliriz.
+	workout.UserID = userID.(primitive.ObjectID)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	collection := database.GetCollection("workouts")
+
 	result, err := collection.InsertOne(ctx, workout)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Veritabanına kaydedilemedi!"})
 		return
 	}
 
+	// Yanıtı gönderiyoruz
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Antrenman başarıyla kaydedildi! 💪",
 		"id":      result.InsertedID,
 	})
+
+	// --- RABBITMQ BURADA BAŞLIYOR ---
+	// Yeni oluşan ID'yi alıyoruz
+	newID := result.InsertedID.(primitive.ObjectID).Hex()
+
+	// Mesajı fırlatıyoruz (go kelimesiyle arka plana atıyoruz)
+	go func(id string) {
+		msg := "Yeni antrenman eklendi! ID: " + id
+		queue.PublishWorkoutEvent(msg)
+	}(newID)
+	// --------------------------------
 }
 
 func GetWorkouts(c *gin.Context) {

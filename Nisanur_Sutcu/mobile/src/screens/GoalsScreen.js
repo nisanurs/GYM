@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 
@@ -25,19 +25,15 @@ export default function GoalsScreen({ navigation, route }) {
 
     setLoading(true);
     try {
-      if (targetWeight) {
-        await axios.put(`${BASE_URL}/v1/api/user/target`, {
-          target_weight: parseFloat(targetWeight)
-        }, {
-          headers: { 'Authorization': `Bearer ${userToken}` }
-        });
-      }
+      await axios.put(`${BASE_URL}/v1/api/user/target`, {
+        target_weight: parseFloat(targetWeight) || 0,
+        goal: selectedGoal,
+      }, { headers: { 'Authorization': `Bearer ${userToken}` } });
 
-      Alert.alert("Yeni hedeflerin kaydedildi.", [
+      Alert.alert("Güncellendi! 🎯", "Hedeflerin kaydedildi. AI artık bunu biliyor.", [
         { text: "Tamam", onPress: () => navigation.goBack() }
       ]);
     } catch (error) {
-      console.error("Hedef güncellenemedi:", error.response?.data);
       Alert.alert("Hata", "Güncelleme başarısız: " + (error.response?.data?.error || "Bağlantı hatası"));
     } finally {
       setLoading(false);
@@ -52,7 +48,7 @@ export default function GoalsScreen({ navigation, route }) {
         </TouchableOpacity>
 
         <Text style={styles.header}>HEDEFLERİMİ <Text style={{ color: '#ff0000' }}>GÜNCELLE</Text></Text>
-        <Text style={styles.subText}>Hedeflerin değiştiyse buradan güncelleyebilirsin.</Text>
+        <Text style={styles.subText}>Hedeflerin değişti mi? Buradan güncelle, AI önerilerin buna göre ayarlanır.</Text>
 
         <View style={styles.form}>
           <Text style={styles.label}>Yeni Hedef Kilo (kg)</Text>
@@ -73,24 +69,17 @@ export default function GoalsScreen({ navigation, route }) {
                 style={[styles.goalCard, selectedGoal === g.key && styles.goalCardActive]}
                 onPress={() => setSelectedGoal(g.key)}
               >
-                <Text style={[styles.goalLabel, selectedGoal === g.key && { color: '#fff' }]}>
-                  {g.label}
-                </Text>
-                <Text style={[styles.goalDesc, selectedGoal === g.key && { color: '#ffaaaa' }]}>
-                  {g.desc}
-                </Text>
+                <Text style={[styles.goalLabel, selectedGoal === g.key && { color: '#fff' }]}>{g.label}</Text>
+                <Text style={[styles.goalDesc, selectedGoal === g.key && { color: '#ffaaaa' }]}>{g.desc}</Text>
               </TouchableOpacity>
             ))}
           </View>
 
-          <TouchableOpacity
-            style={[styles.button, loading && { opacity: 0.6 }]}
-            onPress={handleSave}
-            disabled={loading}
-          >
-            <Text style={styles.buttonText}>{loading ? "Kaydediliyor..." : "HEDEFLERİ KAYDET 🎯"}</Text>
+          <TouchableOpacity style={[styles.button, loading && { opacity: 0.6 }]} onPress={handleSave} disabled={loading}>
+            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>HEDEFLERİ KAYDET 🎯</Text>}
           </TouchableOpacity>
         </View>
+        <View style={{ height: 30 }} />
       </ScrollView>
     </SafeAreaView>
   );

@@ -195,8 +195,6 @@ export default function StatsScreen({ navigation, route }) {
                         <Text style={styles.infoText}>
                             • Her nokta bir ölçüm tarihini gösterir.{'\n'}
                             • <Text style={{ color: '#ff4444' }}>▲ Kırmızı</Text> = artış &nbsp;|&nbsp; <Text style={{ color: '#00cc66' }}>▼ Yeşil</Text> = azalış{'\n'}
-                            • Kilo ve yağ oranında azalış olumludur.{'\n'}
-                            • Kas ölçülerinde artış ilerleme göstergesidir.
                         </Text>
                     </View>
 

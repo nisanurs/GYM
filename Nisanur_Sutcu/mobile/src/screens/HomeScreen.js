@@ -93,7 +93,7 @@ export default function HomeScreen({ navigation, route }) {
         if (count === 0) return "Ölçümlerinde henüz bir değişiklik yok. Pes etmek yok, antrenmanlara tam gaz devam! 💪";
 
         // Değişimleri aralarına virgül koyarak güzel bir cümleye çeviriyoruz
-        return `Toplam ${count} bölgede değişim var:\n${changes.join(', ')}. Harika gidiyorsun! 🔥`;
+        return `Toplam ${count} bölgede değişim var:\n${changes.join(', ')}. `;
     };
 
     if (loading) {
@@ -125,14 +125,14 @@ export default function HomeScreen({ navigation, route }) {
             {/* Dropdown Menü & Arka Plan Karartma (Focus Efekti) */}
             {menuOpen && (
                 <>
-                    <Pressable style={styles.overlay} onPress={() => setMenuOpen(false)} />
+                    <Pressable style={styles.overlay} onPress={() => setMenuOpen(false)} />// Sayfayı karartan focus efekti
                     <View style={styles.dropdown}>
                         {NAV_ITEMS.map((item, index) => (
                             <TouchableOpacity
                                 key={item.screen}
                                 style={[
                                     styles.dropdownItem,
-                                    index !== NAV_ITEMS.length - 1 && styles.dropdownDivider // Son elemana çizgi çekme
+                                    index !== NAV_ITEMS.length - 1 && styles.dropdownDivider 
                                 ]}
                                 onPress={() => navigate(item.screen)}
                             >

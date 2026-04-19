@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import axios from 'axios';
+import axios from 'axios';// HTTP istekleri için axios kütüphanesini kullanıyoruz
 
-const BASE_URL = 'https://gym-hku6.onrender.com';
+
+const BASE_URL = 'https://gym-hku6.onrender.com'; // Backend API URL'si
 
 const GOALS = [
     { key: 'fat_loss', label: '🔥 Yağ Yakma' },
@@ -12,31 +14,31 @@ const GOALS = [
 ];
 
 export default function BodyInputScreen({ navigation, route }) {
-    const { userToken } = route.params || {};
+    // route.params ile önceki ekrandan gelen parametreleri alıyoruz
+    const { userToken } = route.params || {};// Kullanıcı token'ını alıyoruz
     const [weight, setWeight] = useState('');
     const [height, setHeight] = useState('');
     const [targetWeight, setTargetWeight] = useState('');
     const [selectedGoal, setSelectedGoal] = useState('');
 
-    const handleNext = async () => {
+    const handleNext = async () => {// Kullanıcı bilgilerini kaydetmeden önce doğrulama yapıyoruz
         if (!weight || !height || !selectedGoal) {
             Alert.alert("Uyarı", "Lütfen kilo, boy ve hedefini seç!");
             return;
         }
 
-        try {
-            // 1. İlk ölçüyü kaydet
+        try {// 1. Kullanıcının ölçümlerini backend'e kaydet
             await axios.post(`${BASE_URL}/v1/api/measures`, {
                 weight: parseFloat(weight),
                 height: parseFloat(height),
                 fat_rate: 0,
                 target_weight: parseFloat(targetWeight) || 0,
-                date: new Date().toISOString().split('T')[0],
+                date: new Date().toISOString().split('T')[0],// Bugünün tarihini YYYY-MM-DD formatında gönderiyoruz
             }, {
-                headers: { 'Authorization': `Bearer ${userToken}` }
+                headers: { 'Authorization': `Bearer ${userToken}` }// Authorization header'ına Bearer token'ı ekliyoruz
             });
 
-            // 2. Hedef kilonu kullanıcıya kaydet
+
             if (targetWeight) {
                 await axios.put(`${BASE_URL}/v1/api/user/target`, {
                     target_weight: parseFloat(targetWeight)
@@ -109,7 +111,7 @@ export default function BodyInputScreen({ navigation, route }) {
                     </View>
 
                     <TouchableOpacity style={styles.button} onPress={handleNext}>
-                        <Text style={styles.buttonText}>BAŞLA 🚀</Text>
+                        <Text style={styles.buttonText}>HADİ BAŞLAYALIM!</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>

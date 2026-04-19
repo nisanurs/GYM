@@ -8,7 +8,7 @@ const BASE_URL = 'https://gym-hku6.onrender.com';
 export default function EditWorkoutScreen({ navigation, route }) {
     const { userToken, workout } = route.params || {};
 
-    // Mevcut değerlerle başlat
+    // workout objesi, önceki ekrandan düzenlenmek üzere gönderilen antrenman kaydını içerir. Eğer yoksa boş bir nesne olarak başlatılır.
     const [exercise, setExercise] = useState(workout?.exercise || workout?.Exercise || '');
     const [sets, setSets] = useState(String(workout?.sets ?? workout?.Sets ?? ''));
     const [reps, setReps] = useState(String(workout?.reps ?? workout?.Reps ?? ''));
@@ -22,7 +22,7 @@ export default function EditWorkoutScreen({ navigation, route }) {
             return;
         }
 
-        try {
+        try {// Antrenman kaydını backend'e güncelle
             await axios.put(`${BASE_URL}/v1/api/workouts/${workoutId}`, {
                 exercise,
                 sets: parseInt(sets),
@@ -33,7 +33,7 @@ export default function EditWorkoutScreen({ navigation, route }) {
                 headers: { 'Authorization': `Bearer ${userToken}` }
             });
 
-            Alert.alert("Güncellendi! ✅", "Antrenman kaydı başarıyla güncellendi.", [
+            Alert.alert("Antrenman kaydı başarıyla güncellendi.", [
                 { text: "Tamam", onPress: () => navigation.goBack() }
             ]);
         } catch (error) {
@@ -50,7 +50,7 @@ export default function EditWorkoutScreen({ navigation, route }) {
                 </TouchableOpacity>
 
                 <Text style={styles.header}>ANTRENMAN <Text style={{ color: '#ff0000' }}>DÜZENLE</Text></Text>
-                <Text style={styles.subText}>Yanlış girdiğin değerleri düzelt.</Text>
+                <Text style={styles.subText}>Düzeltme.</Text>
 
                 <View style={styles.form}>
                     <Text style={styles.label}>Egzersiz Adı</Text>
@@ -93,7 +93,7 @@ export default function EditWorkoutScreen({ navigation, route }) {
                     />
 
                     <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-                        <Text style={styles.buttonText}>KAYDET ✅</Text>
+                        <Text style={styles.buttonText}>KAYDET</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>

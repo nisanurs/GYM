@@ -117,7 +117,7 @@ export default function TrainingScreen({ navigation, route }) {
                     <TextInput style={[styles.input, { flex: 1 }]} placeholder="Kg" placeholderTextColor="#666" keyboardType="numeric" value={weight} onChangeText={setWeight} />
                 </View>
                 <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                    <Text style={styles.buttonText}>KAYDET 💪</Text>
+                    <Text style={styles.buttonText}>KAYDET ✨</Text>
                 </TouchableOpacity>
             </View>
 

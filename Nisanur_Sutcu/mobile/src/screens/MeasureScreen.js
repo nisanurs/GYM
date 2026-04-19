@@ -10,10 +10,10 @@ const FIELDS = [
     { key: 'height', label: '📏  Boy (cm)', placeholder: 'Örn: 170' },
     { key: 'fat_rate', label: '🔥  Yağ Oranı (%)', placeholder: 'Örn: 18' },
     { key: 'arm', label: '💪  Kol (cm)', placeholder: 'Örn: 32' },
-    { key: 'waist', label: '〰️  Bel (cm)', placeholder: 'Örn: 75' },
+    { key: 'waist', label: '🛟  Bel (cm)', placeholder: 'Örn: 75' },
     { key: 'hip', label: '🍑  Kalça (cm)', placeholder: 'Örn: 95' },
     { key: 'leg', label: '🦵  Bacak (cm)', placeholder: 'Örn: 55' },
-    { key: 'neck', label: '🔵  Boyun (cm)', placeholder: 'Örn: 36' },
+    { key: 'neck', label: '💆  Boyun (cm)', placeholder: 'Örn: 36' },
     { key: 'shoulder', label: '🏋️  Omuz Genişliği (cm)', placeholder: 'Örn: 45' },
 ];
 

@@ -6,9 +6,9 @@ import axios from 'axios';
 const BASE_URL = 'https://gym-hku6.onrender.com';
 
 const GOALS = [
-  { key: 'fat_loss',     label: '🔥 Yağ Yakma',      desc: 'Vücut yağını azalt, formunu ortaya çıkar' },
-  { key: 'muscle_gain',  label: '💪 Kas Kazanma',     desc: 'Kas kütlesi kazan, güç artır' },
-  { key: 'maintenance',  label: '⚖️ Formu Koruma',    desc: 'Mevcut kilonu ve formunu koru' },
+  { key: 'fat_loss', label: '🔥 Yağ Yakma', desc: 'Vücut yağını azalt, formunu ortaya çıkar' },
+  { key: 'muscle_gain', label: '💪 Kas Kazanma', desc: 'Kas kütlesi kazan, güç artır' },
+  { key: 'maintenance', label: '⚖️ Formu Koruma', desc: 'Mevcut kilonu ve formunu koru' },
 ];
 
 export default function GoalsScreen({ navigation, route }) {
@@ -33,11 +33,11 @@ export default function GoalsScreen({ navigation, route }) {
         });
       }
 
-      Alert.alert("Hedef Güncellendi! 🎯", "Yeni hedeflerin kaydedildi.", [
+      Alert.alert("Yeni hedeflerin kaydedildi.", [
         { text: "Tamam", onPress: () => navigation.goBack() }
       ]);
     } catch (error) {
-      console.error("Hedef güncelleme hatası:", error.response?.data);
+      console.error("Hedef güncellenemedi:", error.response?.data);
       Alert.alert("Hata", "Güncelleme başarısız: " + (error.response?.data?.error || "Bağlantı hatası"));
     } finally {
       setLoading(false);

@@ -49,7 +49,7 @@ export default function RegisterScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <Text style={styles.logo}>YENİ <Text style={{ color: '#ff0000' }}>HESAP</Text></Text>
-            <Text style={styles.tagline}>Aramıza katıl 💪</Text>
+            <Text style={styles.tagline}>Aramıza katıl 🫂</Text>
 
             <View style={styles.inputContainer}>
                 <TextInput
@@ -79,7 +79,7 @@ export default function RegisterScreen({ navigation }) {
             </View>
 
             <TouchableOpacity style={[styles.button, loading && { opacity: 0.7 }]} onPress={handleRegister} disabled={loading}>
-                {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>KAYIT OL 🚀</Text>}
+                {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>KAYIT OL 🧾</Text>}
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => navigation.navigate('Login')} style={{ marginTop: 20 }}>

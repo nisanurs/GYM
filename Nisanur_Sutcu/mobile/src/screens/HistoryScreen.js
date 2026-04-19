@@ -13,10 +13,10 @@ const LABELS = {
     height: '📏 Boy',
     fat_rate: '🔥 Yağ Oranı',
     arm: '💪 Kol',
-    waist: '〰️ Bel',
+    waist: '🛟 Bel',
     hip: '🍑 Kalça',
     leg: '🦵 Bacak',
-    neck: '🔵 Boyun',
+    neck: '💆 Boyun',
     shoulder: '🏋️ Omuz',
 };
 
@@ -30,7 +30,7 @@ export default function HistoryScreen({ navigation, route }) {
     const { userToken } = route.params || {};
     const [measures, setMeasures] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [expanded, setExpanded] = useState(null); // Hangi kart açık
+    const [expanded, setExpanded] = useState(null);
 
     useEffect(() => {
         fetchHistory();

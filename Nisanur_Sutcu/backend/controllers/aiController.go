@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"gymbuddy/database"
 	"gymbuddy/models"
 	"io"
@@ -103,8 +104,10 @@ func GetAIRecommendation(c *gin.Context) {
 
 	// 6. Anthropic API'ye gönder
 	apiKey := os.Getenv("ANTHROPIC_API_KEY")
+	fmt.Printf("🔑 API KEY VAR MI: %v, UZUNLUK: %d\n", apiKey != "", len(apiKey))
+
 	if apiKey == "" {
-		// API key yoksa akıllı mock dön
+		fmt.Println("⚠️ API KEY YOK - Mock'a düşüyor")
 		c.JSON(http.StatusOK, gin.H{
 			"recommendation": buildMockRecommendation(user, muscleList),
 			"source":         "mock",
@@ -113,7 +116,9 @@ func GetAIRecommendation(c *gin.Context) {
 	}
 
 	recommendation, err := callAnthropicAPI(apiKey, prompt)
+	fmt.Printf("🤖 AI YANITI: %v, HATA: %v\n", recommendation != "", err)
 	if err != nil {
+		fmt.Printf("❌ API HATASI: %v\n", err)
 		// API hatasında mock'a düş
 		c.JSON(http.StatusOK, gin.H{
 			"recommendation": buildMockRecommendation(user, muscleList),

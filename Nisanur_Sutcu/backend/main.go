@@ -4,6 +4,7 @@ import (
 	"gymbuddy/controllers"
 	"gymbuddy/database"
 	"gymbuddy/middleware"
+	"gymbuddy/queue"
 	"net/http"
 	"os"
 
@@ -27,6 +28,7 @@ func main() {
 	})
 
 	database.DBConnect()
+	queue.InitRabbitMQ()
 
 	// Test endpoint'i
 	r.GET("/v1/ping", func(c *gin.Context) {
@@ -36,15 +38,14 @@ func main() {
 	})
 
 	// Auth Rotaları
-	r.POST("/auth/register", controllers.RegisterUser)// Register endpoint'ine POST isteği geldiğinde RegisterUser fonksiyonunu çağır
-	r.POST("/auth/login", controllers.LoginUser)// Login endpoint'ine POST isteği geldiğinde LoginUser fonksiyonunu çağır
-
+	r.POST("/auth/register", controllers.RegisterUser) // Register endpoint'ine POST isteği geldiğinde RegisterUser fonksiyonunu çağır
+	r.POST("/auth/login", controllers.LoginUser)       // Login endpoint'ine POST isteği geldiğinde LoginUser fonksiyonunu çağır
 
 	// Korumalı Rotalar
-	protected := r.Group("/v1/api")// "/v1/api" ile başlayan rotalar için bir grup oluşturuyoruz
+	protected := r.Group("/v1/api") // "/v1/api" ile başlayan rotalar için bir grup oluşturuyoruz
 	protected.Use(middleware.AuthMiddleware())
 	{
-		protected.GET("/secure-data", func(c *gin.Context) {// "/v1/api/secure-data" endpoint'ine GET isteği geldiğinde bu fonksiyonu çalıştır
+		protected.GET("/secure-data", func(c *gin.Context) { // "/v1/api/secure-data" endpoint'ine GET isteği geldiğinde bu fonksiyonu çalıştır
 			c.JSON(http.StatusOK, gin.H{
 				"message": " Token onayland️ı",
 			})
@@ -59,7 +60,7 @@ func main() {
 		protected.PUT("/user/target", controllers.UpdateTargetWeight)
 		protected.GET("/ai/recommend", controllers.GetAIRecommendation)
 		protected.DELETE("/measures/:id", controllers.DeleteBodyMeasure)
-		
+
 	}
 
 	r.POST("/workouts", controllers.CreateWorkout)

@@ -18,7 +18,7 @@ func DBConnect() {
 
 	uri := "mongodb+srv://nisa:stcnokta@test.ek07wik.mongodb.net/GYMBUDDY?retryWrites=true&w=majority"
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	// Bağlantı seçeneklerini ayarla ve bağlan

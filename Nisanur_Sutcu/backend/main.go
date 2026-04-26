@@ -5,14 +5,21 @@ import (
 	"gymbuddy/database"
 	"gymbuddy/middleware"
 	"gymbuddy/queue"
+	"log"
 	"net/http"
 	"os"
+
+	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(".env dosyası yüklenirken hata oluştu!")
+	}
 	r := gin.Default()
 
 	// CORS Middleware
@@ -29,6 +36,7 @@ func main() {
 
 	database.DBConnect()
 	queue.InitRabbitMQ()
+	queue.StartConsumer()
 
 	// Test endpoint'i
 	r.GET("/v1/ping", func(c *gin.Context) {

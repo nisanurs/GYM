@@ -60,10 +60,9 @@ func CreateWorkout(c *gin.Context) {
 }
 
 func GetWorkouts(c *gin.Context) {
-
 	userID, exists := c.Get("userId")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Kullanıcı kimliği bulunamadı!"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Yetkisiz!"})
 		return
 	}
 
@@ -72,22 +71,14 @@ func GetWorkouts(c *gin.Context) {
 	defer cancel()
 
 	findOptions := options.Find().SetSort(bson.D{{Key: "date", Value: -1}})
-	//Bu komut, MongoDB'den workout verilerini çekerken onları tarihe göre sıralamamızı sağlar. "date" alanına göre azalan sırada (-1) sıralama yaparız, böylece en yeni antrenmanlar en üstte görünür.
-	filter := bson.M{"user_id": userID.(primitive.ObjectID)}
-
-	cursor, err := collection.Find(ctx, filter, findOptions)
+	cursor, err := collection.Find(ctx, bson.M{"user_id": userID.(primitive.ObjectID)}, findOptions)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Veriler çekilemedi"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Veritabanı hatası"})
 		return
 	}
 
 	var workouts []models.Workout
-	//MongoDB'den çekilen verileri Go dilinde kullanabilmemiz için bu verileri models.Workout türünde bir dilim (slice) içine atarız. Böylece bu antrenmanları telefona JSON formatında gönderebiliriz.
-	if err = cursor.All(ctx, &workouts); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Veri dönüştürme hatası!"})
-		return
-	}
-
+	cursor.All(ctx, &workouts)
 	if workouts == nil {
 		workouts = []models.Workout{}
 	}

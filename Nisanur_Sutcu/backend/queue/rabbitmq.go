@@ -3,7 +3,6 @@ package queue
 import (
 	"context"
 	"log"
-	"os"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -14,11 +13,8 @@ var Conn *amqp.Connection
 var Channel *amqp.Channel
 
 func InitRabbitMQ() {
-	// 1. Önce Render üzerindeki Environment Variable'ı kontrol et
-	// Eğer Render'a RABBITMQ_URL eklediysen onu alacak
-	url := os.Getenv("RABBITMQ_URL")
+	url := "amqps://frxuubvy:IxGbYGqdAHr48i77wS-_8skEfKIrwbrk@chameleon.lmq.cloudamqp.com/frxuubvy"
 
-	// 2. Eğer URL boşsa (yani bilgisayarında çalıştırıyorsan), local adresi kullan
 	if url == "" {
 		url = "amqp://guest:guest@localhost:5672/"
 		log.Println("⚠️  RABBITMQ_URL bulunamadı, localhost'a bağlanılıyor...")
@@ -76,4 +72,30 @@ func PublishWorkoutEvent(body string) error {
 
 	log.Println("🚀 RabbitMQ: Mesaj başarıyla fırlatıldı!")
 	return nil
+}
+
+// StartConsumer - Kuyruktaki mesajları dinlemeye başlar
+func StartConsumer() {
+	msgs, err := Channel.Consume(
+		"workout_queue", // Dinlenecek kuyruk adı
+		"",              // Consumer etiketi (boş kalabilir)
+		true,            // Auto-ack: Mesajı alınca "okundu" bilgisini otomatik gönderir
+		false,           // Exclusive
+		false,           // No-local
+		false,           // No-wait
+		nil,             // Args
+	)
+	if err != nil {
+		log.Fatalf("❌ Mesajlar alınamadı: %v", err)
+	}
+
+	// Mesajları sonsuza kadar dinlemek için bir kanal (goroutine) açıyoruz
+	go func() {
+		for d := range msgs {
+			log.Printf("📥 Kuyruktan Yeni Mesaj Geldi: %s", d.Body)
+			// Burada gelen veriyi (antrenman bilgisini) parse edip DB'ye yazabilirsin
+		}
+	}()
+
+	log.Println("👂 Consumer başlatıldı, mesajlar bekleniyor...")
 }

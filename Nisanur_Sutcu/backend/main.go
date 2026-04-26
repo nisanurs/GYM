@@ -1,11 +1,11 @@
 package main
 
 import (
+	"gymbuddy/cache"
 	"gymbuddy/controllers"
 	"gymbuddy/database"
 	"gymbuddy/middleware"
 	"gymbuddy/queue"
-	"log"
 	"net/http"
 	"os"
 
@@ -16,10 +16,8 @@ import (
 
 func main() {
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(".env dosyası yüklenirken hata oluştu!")
-	}
+	_ = godotenv.Load()
+
 	r := gin.Default()
 
 	// CORS Middleware
@@ -37,6 +35,7 @@ func main() {
 	database.DBConnect()
 	queue.InitRabbitMQ()
 	queue.StartConsumer()
+	cache.InitRedis()
 
 	// Test endpoint'i
 	r.GET("/v1/ping", func(c *gin.Context) {
@@ -70,17 +69,6 @@ func main() {
 		protected.DELETE("/measures/:id", controllers.DeleteBodyMeasure)
 
 	}
-
-	r.POST("/workouts", controllers.CreateWorkout)
-	r.GET("/workouts", controllers.GetWorkouts)
-	r.DELETE("/workouts/:id", controllers.DeleteWorkout)
-	r.PUT("/workouts/:id", controllers.UpdateWorkout)
-	r.POST("/measures", controllers.AddBodyMeasure)
-	r.PUT("/measures/:id", controllers.UpdateBodyMeasure)
-	r.GET("/stats/body", controllers.GetBodyStats)
-	r.PUT("/user/target", controllers.UpdateTargetWeight)
-	r.GET("/ai/recommend", controllers.GetAIRecommendation)
-	r.DELETE("/measures/:id", controllers.DeleteBodyMeasure)
 
 	port := os.Getenv("PORT")
 	if port == "" {

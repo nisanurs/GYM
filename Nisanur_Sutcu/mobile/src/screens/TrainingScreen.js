@@ -144,7 +144,10 @@ export default function TrainingScreen({ navigation, route }) {
                                         </Text>
                                     </View>
                                     <View style={styles.actions}>
-                                        <TouchableOpacity onPress={() => navigation.navigate('EditWorkout', { userToken, workout: item })}>
+                                        <TouchableOpacity onPress={() => {
+                                    
+                                            navigation.navigate('EditWorkout', { userToken, workout: item });
+                                        }}>
                                             <Text style={{ fontSize: 16 }}>✏️</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity onPress={() => deleteLog(itemId)}>

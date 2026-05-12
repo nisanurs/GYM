@@ -8,13 +8,12 @@ const BASE_URL = 'https://gym-hku6.onrender.com';
 export default function EditWorkoutScreen({ navigation, route }) {
     const { userToken, workout } = route.params || {};
 
-    // workout objesi, önceki ekrandan düzenlenmek üzere gönderilen antrenman kaydını içerir. Eğer yoksa boş bir nesne olarak başlatılır.
     const [exercise, setExercise] = useState(workout?.exercise || workout?.Exercise || '');
     const [sets, setSets] = useState(String(workout?.sets ?? workout?.Sets ?? ''));
     const [reps, setReps] = useState(String(workout?.reps ?? workout?.Reps ?? ''));
     const [weight, setWeight] = useState(String(workout?.weight ?? workout?.Weight ?? ''));
 
-    const workoutId = workout?.id || workout?.ID;
+    const workoutId = workout?._id || workout?.id || workout?.ID;
 
     const handleUpdate = async () => {
         if (!exercise || !sets || !reps || !weight) {
@@ -22,7 +21,14 @@ export default function EditWorkoutScreen({ navigation, route }) {
             return;
         }
 
-        try {// Antrenman kaydını backend'e güncelle
+      
+        if (!workoutId) {
+            Alert.alert("Hata", "Workout ID bulunamadı, lütfen geri dönüp tekrar deneyin.");
+            console.error("workoutId undefined! workout objesi:", workout);
+            return;
+        }
+
+        try {
             await axios.put(`${BASE_URL}/v1/api/workouts/${workoutId}`, {
                 exercise,
                 sets: parseInt(sets),
@@ -33,7 +39,7 @@ export default function EditWorkoutScreen({ navigation, route }) {
                 headers: { 'Authorization': `Bearer ${userToken}` }
             });
 
-            Alert.alert("Antrenman kaydı başarıyla güncellendi.", [
+            Alert.alert("Başarılı", "Antrenman kaydı güncellendi.", [
                 { text: "Tamam", onPress: () => navigation.goBack() }
             ]);
         } catch (error) {

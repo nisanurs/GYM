@@ -1,0 +1,26 @@
+name: GymBuddy CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu GitHub'dan çek
+        uses: actions/checkout@v3
+
+      - name: Go ortamını hazırla
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Bağımlılıkları yükle
+        run: |
+          cd backend
+          go mod download
+
+      - name: Render'a Otomatik Deploy Et
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}

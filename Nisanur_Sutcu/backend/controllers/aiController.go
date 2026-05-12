@@ -59,7 +59,7 @@ func GetAIRecommendation(c *gin.Context) {
 	}
 
 	uid := userID.(primitive.ObjectID)
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	// 1. Kullanıcı bilgilerini çek

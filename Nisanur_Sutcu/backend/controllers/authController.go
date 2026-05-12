@@ -30,7 +30,7 @@ func RegisterUser(c *gin.Context) {
 	//bcrypt.GenerateFromPassword fonksiyonu, kullanıcının şifresini alır ve onu "kırmak imkansız" hale getiren bir şekilde öğütür (hashler). Bu sayede, eğer bir gün kötü niyetli biri veritabanımıza sızarsa, kullanıcıların gerçek şifrelerini göremez. Sadece o şifrelerin öğütülmüş (hashed) hallerini görür, ki bu da onları kırmayı çok zorlaştırır.
 
 	userCollection := database.GetCollection("users")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	result, err := userCollection.InsertOne(ctx, user)
@@ -59,7 +59,7 @@ func LoginUser(c *gin.Context) {
 
 	userCollection := database.GetCollection("users")
 	var user models.User
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	//Bu komut, MongoDB'deki "users" koleksiyonunda, "email" alanı input.Email'e eşit olan bir kullanıcıyı bulmaya çalışır. Eğer böyle bir kullanıcı bulunamazsa veya başka bir hata oluşursa, 401 (Unauthorized) hatası döneriz. Bu durum genellikle kullanıcının yanlış e-posta girdiği anlamına gelir.
 

@@ -108,12 +108,14 @@ export default function HomeScreen({ navigation, route }) {
                                 hip: 'Kalça', shoulder: 'Omuz', fat_rate: 'Yağ Oranı'
                             };
                             const display = numVal > 0 ? `+${numVal.toFixed(1)}` : `${numVal.toFixed(1)}`;
+
                             return (
                                 <View key={key} style={styles.tableRow}>
                                     <Text style={styles.tableLabel}>{labels[key] || key}</Text>
                                     <View style={styles.valueContainer}>
                                         <Text style={[styles.value, { color: numVal >= 0 ? '#ff4444' : '#00cc66' }]}>
-                                            {display}
+
+                                            <AnimatedNumber value={numVal} />
                                         </Text>
                                         <Text style={styles.unit}> birim</Text>
                                     </View>
@@ -170,4 +172,43 @@ const styles = StyleSheet.create({
     quickBtn: { flex: 1, backgroundColor: '#ff0000', padding: 16, borderRadius: 12, alignItems: 'center', gap: 6 },
     quickIcon: { fontSize: 22 },
     quickLabel: { color: '#fff', fontWeight: 'bold', fontSize: 11 },
-});
+});// Sıfırdan hedef sayıya kadar hızlıca sayan animasyonlu bileşen
+function AnimatedNumber({ value }) {
+    const [displayValue, setDisplayValue] = useState(0);
+
+    useEffect(() => {
+        let start = 0;
+        const end = parseFloat(value);
+
+        // Eğer gelen değer sayı değilse veya 0 ise direkt 0 göster
+        if (isNaN(end) || end === 0) {
+            setDisplayValue(0);
+            return;
+        }
+
+        // Animasyonun toplam ne kadar süreceği (milisaniye cinsinden)
+        const duration = 1000; // 1 saniyede tamamlansın
+        const frameRate = 20;  // Her 20 milisaniyede bir sayı güncellensin
+        const totalFrames = duration / frameRate;
+        const step = end / totalFrames;
+
+        const timer = setInterval(() => {
+            start += step;
+
+            // Hedefe ulaştık mı kontrolü
+            if ((step > 0 && start >= end) || (step < 0 && start <= end)) {
+                clearInterval(timer);
+                setDisplayValue(end); // Tam hedef sayıda sabitle
+            } else {
+                setDisplayValue(start);
+            }
+        }, frameRate);
+
+        return () => clearInterval(timer); // Bileşen ekrandan giderse hafızayı temizle
+    }, [value]);
+
+    // Sayının başına artı işareti koyma kontrolü (+1.5 veya -0.5 gibi)
+    const sign = displayValue > 0 ? '+' : '';
+
+    return sign + displayValue.toFixed(1);
+}

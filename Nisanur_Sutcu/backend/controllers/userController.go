@@ -36,7 +36,7 @@ func UpdateTargetWeight(c *gin.Context) {
 		return
 	}
 
-	// 3. DİNAMİK GÜNCELLEME ALANLARINI HAZIRLAMA (BU KODUN EN GÜZEL KISMI)
+	// 3. DİNAMİK GÜNCELLEME ALANLARINI HAZIRLAMA 
 	// Boş bir BSON (MongoDB dili) haritası oluşturuyoruz. İçine sadece değişmesi gerekenleri koyacağız.
 	updateFields := bson.M{}
 

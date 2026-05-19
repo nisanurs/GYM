@@ -20,20 +20,18 @@ func InitRedis() {
 		return
 	}
 
-	// URL'yi manuel parçalamak yerine ParseURL ile alıp TLS'yi zorlayalım
 	opt, err := redis.ParseURL(url)
 	if err != nil {
 		log.Printf("❌ Redis URL ayrıştırma hatası: %v", err)
 		return
 	}
 
-	// EOF HATASINI BİTİRECEK OLAN AYARLAR:
 	opt.TLSConfig = &tls.Config{
 		InsecureSkipVerify: true,
-		MinVersion:         tls.VersionTLS12, // Güvenliği bir tık zorlayalım
+		MinVersion:         tls.VersionTLS12,
 	}
-	opt.PoolSize = 10              // Bağlantı havuzu oluştur
-	opt.MaxRetries = 3             // Koparsa 3 kere dene
+	opt.PoolSize = 10  // Bağlantı havuzu oluştur
+	opt.MaxRetries = 3 // Koparsa 3 kere dene
 	opt.ReadTimeout = 5 * time.Second
 
 	RedisClient = redis.NewClient(opt)

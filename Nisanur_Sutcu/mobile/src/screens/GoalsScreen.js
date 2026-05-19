@@ -30,7 +30,7 @@ export default function GoalsScreen({ navigation, route }) {
         goal: selectedGoal,
       }, { headers: { 'Authorization': `Bearer ${userToken}` } });
 
-      Alert.alert("Güncellendi! 🎯", "Hedeflerin kaydedildi. AI artık bunu biliyor.", [
+      Alert.alert("Güncellendi! 🎯", "Hedeflerin kaydedildi.", [
         { text: "Tamam", onPress: () => navigation.goBack() }
       ]);
     } catch (error) {

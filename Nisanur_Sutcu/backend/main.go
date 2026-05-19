@@ -65,7 +65,6 @@ func main() {
 		protected.PUT("/measures/:id", controllers.UpdateBodyMeasure)
 		protected.GET("/stats/body", controllers.GetBodyStats)
 		protected.PUT("/user/target", controllers.UpdateTargetWeight)
-		protected.GET("/ai/recommend", controllers.GetAIRecommendation)
 		protected.DELETE("/measures/:id", controllers.DeleteBodyMeasure)
 
 	}

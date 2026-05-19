@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// Client'ı diğer dosyalardan (models, controllers) çağırabilmek için büyük harfle (Client) tanımlıyoruz
+// Client'ı diğer dosyalardan (models, controllers) çağırabilmek için tanımlıyoruz
 var Client *mongo.Client
 
 // DBConnect veritabanı bağlantısını başlatan fonksiyondur
@@ -19,7 +19,7 @@ func DBConnect() {
 	uri := "mongodb+srv://nisa:stcnokta@test.ek07wik.mongodb.net/GYMBUDDY?retryWrites=true&w=majority"
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
+	defer cancel()//Bu komut, MongoDB Atlas'a bağlanmak için bir zaman aşımı (timeout) belirler. Eğer bağlantı 30 saniye içinde kurulamazsa, işlemi iptal eder ve hata verir. Bu, bağlantı sorunlarıyla karşılaşıldığında uygulamanın sonsuza kadar beklemesini önler.
 
 	// Bağlantı seçeneklerini ayarla ve bağlan
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))

@@ -9,26 +9,27 @@ import (
 )
 
 // Global değişkenlerimizi tanımlıyoruz ki diğer dosyalardan erişebilelim
-var Conn *amqp.Connection
+var Conn *amqp.Connection 
 var Channel *amqp.Channel
 
 func InitRabbitMQ() {
-	url := "amqps://frxuubvy:IxGbYGqdAHr48i77wS-_8skEfKIrwbrk@chameleon.lmq.cloudamqp.com/frxuubvy"
+	url := "amqps://frxuubvy:IxGbYGqdAHr48i77wS-_8skEfKIrwbrk@chameleon.lmq.cloudamqp.com/frxuubvy" 
 
 	if url == "" {
-		url = "amqp://guest:guest@localhost:5672/"
+		url = "amqp://guest:guest@localhost:5672/"//Eğer çevresel değişkende RABBITMQ_URL tanımlı değilse, varsayılan olarak localhost'a bağlanır. Bu, geliştirme ortamında RabbitMQ'yu kolayca çalıştırabilmek için kullanışlıdır.
 		log.Println("⚠️  RABBITMQ_URL bulunamadı, localhost'a bağlanılıyor...")
 	}
 
 	var err error
 	// 3. RabbitMQ'ya bağlan (Lokal veya Bulut fark etmez)
-	Conn, err = amqp.Dial(url)
+	Conn, err = amqp.Dial(url)//Bu komut, RabbitMQ sunucusuna bağlanmak için kullanılır. "url" değişkeni, RabbitMQ sunucusunun adresini ve kimlik doğrulama bilgilerini içerir. Eğer bağlantı başarılı olursa, "Conn" değişkeni üzerinden RabbitMQ ile iletişim kurabiliriz. Bağlantı sırasında bir hata oluşursa, uygulama log'lar ve sonlanır.
+
 	if err != nil {
 		log.Fatalf("❌ RabbitMQ'ya bağlanamadık: %v", err)
 	}
 
 	// 4. İletişim kanalı aç
-	Channel, err = Conn.Channel()
+	Channel, err = Conn.Channel()//Bu komut, RabbitMQ ile iletişim kurmak için bir kanal açar. RabbitMQ'da tüm işlemler (mesaj gönderme, alma, kuyruk oluşturma vb.) bu kanal üzerinden gerçekleştirilir. Eğer kanal açılırken bir hata oluşursa, uygulama log'lar ve sonlanır.
 	if err != nil {
 		log.Fatalf("❌ RabbitMQ kanalı açılamadı: %v", err)
 	}
@@ -62,7 +63,7 @@ func PublishWorkoutEvent(body string) error {
 		false,           // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        []byte(body),
+			Body:        []byte(body), //Göndermek istediğimiz mesajı (örneğin kullanıcının antrenman bilgilerini içeren bir JSON metnini) byte dizisine çevirip kargo paketinin içine koyuyoruz.
 		})
 
 	if err != nil {
@@ -93,9 +94,11 @@ func StartConsumer() {
 	go func() {
 		for d := range msgs {
 			log.Printf("📥 Kuyruktan Yeni Mesaj Geldi: %s", d.Body)
-			// Burada gelen veriyi (antrenman bilgisini) parse edip DB'ye yazabilirsin
+			// Burada gelen veriyi (antrenman bilgisini) parse edip DB'ye yazabiliriz. Şimdilik sadece log'luyoruz.
 		}
 	}()
 
 	log.Println("👂 Consumer başlatıldı, mesajlar bekleniyor...")
 }
+
+

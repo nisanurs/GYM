@@ -20,8 +20,6 @@ export default function HomeScreen({ navigation, route }) {
     const { userToken } = route.params || {};
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [aiTip, setAiTip] = useState(null);
-    const [aiLoading, setAiLoading] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
 
     useEffect(() => { fetchStats(); }, []);
@@ -36,20 +34,6 @@ export default function HomeScreen({ navigation, route }) {
             console.error(e.response?.data);
         } finally {
             setLoading(false);
-        }
-    };
-
-    const fetchAI = async () => {
-        setAiLoading(true);
-        try {
-            const r = await axios.get(`${BASE_URL}/v1/api/ai/recommend`, {
-                headers: { 'Authorization': `Bearer ${userToken}` }
-            });
-            setAiTip(String(r.data?.recommendation || r.data?.ai_advice || r.data?.message || "Öneri alındı!"));
-        } catch {
-            setAiTip("Öneri alınamadı. Daha fazla antrenman verisi gir!");
-        } finally {
-            setAiLoading(false);
         }
     };
 
@@ -139,16 +123,7 @@ export default function HomeScreen({ navigation, route }) {
                     </View>
                 )}
 
-                <View style={styles.aiCard}>
-                    <Text style={styles.cardTitle}>🤖 AI ANTRENMAN ÖNERİSİ</Text>
-                    {aiTip
-                        ? <Text style={styles.aiText}>{aiTip}</Text>
-                        : <Text style={styles.aiPlaceholder}>Bugün hangi kası çalıştırmalısın?</Text>
-                    }
-                    <TouchableOpacity style={styles.aiButton} onPress={fetchAI} disabled={aiLoading}>
-                        {aiLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>ÖNERİ AL 🧠</Text>}
-                    </TouchableOpacity>
-                </View>
+
 
                 <View style={{ height: 30 }} />
             </ScrollView>
@@ -190,10 +165,6 @@ const styles = StyleSheet.create({
     valueContainer: { flexDirection: 'row', alignItems: 'baseline' },
     value: { fontSize: 17, fontWeight: 'bold' },
     unit: { color: '#666', fontSize: 10 },
-    aiCard: { backgroundColor: '#111', padding: 18, borderRadius: 15, marginBottom: 16, borderWidth: 1, borderColor: '#ff0000' },
-    aiText: { color: '#fff', fontSize: 14, lineHeight: 21, marginBottom: 14 },
-    aiPlaceholder: { color: '#666', fontSize: 13, marginBottom: 14, fontStyle: 'italic' },
-    aiButton: { backgroundColor: '#ff0000', padding: 13, borderRadius: 10, alignItems: 'center' },
     btnText: { color: '#fff', fontWeight: 'bold' },
     quickRow: { flexDirection: 'row', gap: 10 },
     quickBtn: { flex: 1, backgroundColor: '#ff0000', padding: 16, borderRadius: 12, alignItems: 'center', gap: 6 },

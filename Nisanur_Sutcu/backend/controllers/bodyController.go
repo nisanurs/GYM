@@ -130,7 +130,7 @@ func GetBodyStats(c *gin.Context) {
 		return
 	}
 
-	var stats []models.BodyMeasure
+	var stats []models.BodyMeasure//Bu değişken, MongoDB'den dönen ölçü kayıtlarını tutacak bir dilim (slice) olarak tanımlanır. Her bir kayıt models.BodyMeasure yapısına dönüştürülecektir.
 	if err = cursor.All(ctx, &stats); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Dönüştürme hatası"})
 		return

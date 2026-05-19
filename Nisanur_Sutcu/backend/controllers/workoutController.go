@@ -46,14 +46,12 @@ func CreateWorkout(c *gin.Context) {
 		return
 	}
 
-	// --- REDIS CACHE TEMİZLEME (ÖNEMLİ) ---
+	// --- REDIS CACHE TEMİZLEME ---
 	// Yeni antrenman eklendiği için eski listeyi (cache) siliyoruz.
 	// Böylece GetWorkouts çağrıldığında yeni veriyle beraber güncel liste gelir.
 	redisKey := "workouts:" + userObjID.Hex()
 	cache.RedisClient.Del(context.Background(), redisKey)
-	// --------------------------------------
-
-	// 4. Başarılı yanıtını gönder
+	
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Antrenman başarıyla kaydedildi! 💪",
 		"id":      result.InsertedID,
@@ -66,7 +64,7 @@ func CreateWorkout(c *gin.Context) {
 		msg := "Yeni antrenman eklendi! ID: " + id
 		queue.PublishWorkoutEvent(msg)
 	}(newID)
-	// --------------------------------
+
 }
 
 func GetWorkouts(c *gin.Context) {

@@ -38,9 +38,9 @@ func RegisterUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Kullanıcı kaydedilemedi!"})
 		return
 	}
-	//
+
 	c.JSON(http.StatusCreated, gin.H{
-		"message": "Hoş geldin " + user.Name + "! Şifren güvenle saklandı. 💪",
+		"message": "Hoş geldin " + user.Name + "! Şifreni güvenle saklıyoruz! 🔒",
 		"id":      result.InsertedID,
 	})
 }
@@ -61,6 +61,7 @@ func LoginUser(c *gin.Context) {
 	var user models.User
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
+	
 	//Bu komut, MongoDB'deki "users" koleksiyonunda, "email" alanı input.Email'e eşit olan bir kullanıcıyı bulmaya çalışır. Eğer böyle bir kullanıcı bulunamazsa veya başka bir hata oluşursa, 401 (Unauthorized) hatası döneriz. Bu durum genellikle kullanıcının yanlış e-posta girdiği anlamına gelir.
 
 	err := userCollection.FindOne(ctx, bson.M{"email": input.Email}).Decode(&user)

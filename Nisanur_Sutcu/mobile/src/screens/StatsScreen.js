@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Polyline, Line, Circle, Text as SvgText, Rect } from 'react-native-svg';
 import axios from 'axios';
 
-const BASE_URL = 'https://gym-hku6.onrender.com';
+const BASE_URL = 'https://gym-docker.onrender.com';
 const CHART_W = Dimensions.get('window').width - 60;
 const CHART_H = 180;
 const PAD = { top: 24, right: 24, bottom: 36, left: 44 };

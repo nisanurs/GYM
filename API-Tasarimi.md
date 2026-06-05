@@ -157,10 +157,10 @@ paths:
         '204':
           description: Ölçüm silindi.
 
-  /ai/recommend:
+  //recommend:
     get:
       tags:
-        - ai
+        - 
       summary: Yapay zeka ile antrenman önerisi al
       description: Son 3 antrenman verisini analiz ederek sıradaki kas grubunu önerir.
       responses:

@@ -19,7 +19,6 @@ WORKDIR /root/
 
 # Derlenen dosyayı ve varsa .env dosyasını kopyala
 COPY --from=builder /app/main .
-COPY --from=builder /app/.env . 
 
 # Backend 5000 portunda çalıştığı için burayı dışarı açıyoruz
 EXPOSE 5000

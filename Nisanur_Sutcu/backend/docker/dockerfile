@@ -1,5 +1,5 @@
 # 1. Aşama: Uygulamayı derliyoruz
-FROM golang:1.26-alpine
+FROM golang:1.26-alpine AS builder
 
 # Çalışma dizinini ayarla
 WORKDIR /app

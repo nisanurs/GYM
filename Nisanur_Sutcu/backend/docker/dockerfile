@@ -1,5 +1,5 @@
 # 1. Aşama: Uygulamayı derliyoruz
-FROM golang:1.26-alpine AS builder
+FROM golang:1.22-alpine AS builder
 
 # Çalışma dizinini ayarla
 WORKDIR /app
@@ -17,7 +17,7 @@ RUN go build -o main .
 FROM alpine:latest
 WORKDIR /root/
 
-# Derlenen dosyayı ve varsa .env dosyasını kopyala
+# Derlenen çalıştırılabilir dosyayı kopyala (.env satırı kaldırıldı)
 COPY --from=builder /app/main .
 
 # Backend 5000 portunda çalıştığı için burayı dışarı açıyoruz

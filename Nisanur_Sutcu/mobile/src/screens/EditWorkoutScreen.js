@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 
-const BASE_URL = 'https://gym-hku6.onrender.com';
+const BASE_URL = 'https://gym-docker.onrender.com';
 
 export default function EditWorkoutScreen({ navigation, route }) {
     const { userToken, workout } = route.params || {};

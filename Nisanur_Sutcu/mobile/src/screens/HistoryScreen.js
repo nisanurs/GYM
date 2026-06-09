@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 
-const BASE_URL = 'https://gym-hku6.onrender.com';
+const BASE_URL = 'https://gym-docker.onrender.com';
 
 const LABELS = {
     weight: '⚖️ Kilo',

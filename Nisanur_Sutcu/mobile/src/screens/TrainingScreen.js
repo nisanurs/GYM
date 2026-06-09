@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, Alert } 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 
-const BASE_URL = 'https://gym-hku6.onrender.com';
+const BASE_URL = 'https://gym-docker.onrender.com';
 
 const getField = (item, ...keys) => {
     for (const key of keys) {
@@ -145,7 +145,7 @@ export default function TrainingScreen({ navigation, route }) {
                                     </View>
                                     <View style={styles.actions}>
                                         <TouchableOpacity onPress={() => {
-                                    
+
                                             navigation.navigate('EditWorkout', { userToken, workout: item });
                                         }}>
                                             <Text style={{ fontSize: 16 }}>✏️</Text>

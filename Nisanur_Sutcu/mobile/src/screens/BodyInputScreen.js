@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 
-const BASE_URL = 'https://gym-hku6.onrender.com';
+const BASE_URL = 'https://gym-docker.onrender.com';
 
 const GOALS = [
     { key: 'fat_loss', label: '🔥 Yağ Yakma', desc: 'Vücut yağını azalt' },

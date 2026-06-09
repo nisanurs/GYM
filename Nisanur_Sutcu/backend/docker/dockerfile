@@ -23,3 +23,5 @@ WORKDIR /root/
 COPY --from=builder /app/main .
 EXPOSE 5000
 CMD ["./main"]
+
+# ci/cd  denemesi

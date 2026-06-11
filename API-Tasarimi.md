@@ -12,7 +12,7 @@ info:
   version: 1.0.0
   contact:
     name: Nisanur Sütçü
-    email: nisanur@example.com
+    email: niisanur.st@example.com
 
 servers:
   - url: http://localhost:5000/v1
@@ -157,10 +157,10 @@ paths:
         '204':
           description: Ölçüm silindi.
 
-  /ai/recommend:
+  //recommend:
     get:
       tags:
-        - ai
+        - 
       summary: Yapay zeka ile antrenman önerisi al
       description: Son 3 antrenman verisini analiz ederek sıradaki kas grubunu önerir.
       responses:

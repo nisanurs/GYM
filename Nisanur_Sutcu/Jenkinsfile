@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Kodu Cek') {
+            steps {
+                echo 'Kodu GitHubdan cekiliyor...'
+            }
+        }
+        stage('Bağımlılıkları Yukle') {
+            steps {
+                echo 'Go modulleri yukleniyor...'
+                // sh 'go mod download'
+            }
+        }
+        stage('Docker ve Render Deploy') {
+            steps {
+                echo 'Proje Dockerize ediliyor ve Rendera deploy tetikleniyor...'
+            }
+        }
+    }
+}
+
+#degisiklik

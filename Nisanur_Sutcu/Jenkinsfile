@@ -10,7 +10,6 @@ pipeline {
         stage('Bağımlılıkları Yukle') {
             steps {
                 echo 'Go modulleri yukleniyor...'
-                // sh 'go mod download'
             }
         }
         stage('Docker ve Render Deploy') {
@@ -20,5 +19,3 @@ pipeline {
         }
     }
 }
-
-// duzel artık
